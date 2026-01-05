@@ -7,11 +7,23 @@ direction: right
 }
 "SW-J3-01": {
   "xe-0/2/0"
+  "mge-0/0/0"
 }
 "OCX光-ONU": {
   "port1"
+}
+"SAKURA-J3-02": {
+  "ge-0/0/0-仮"
+}
+"SW-J3-02": {
+  "mge-0/0/0"
+}
+"SAKURA-J3-01": {
+  "ge-0/0/0-仮"
 }
 
 # Connections
 "RT-J3-01"."lan3:10" -- "SW-J3-01"."xe-0/2/0"
 "OCX光-ONU"."port1" -- "RT-J3-01"."lan2:9"
+"SAKURA-J3-02"."ge-0/0/0-仮" -- "SW-J3-02"."mge-0/0/0"
+"SW-J3-01"."mge-0/0/0" -- "SAKURA-J3-01"."ge-0/0/0-仮"
