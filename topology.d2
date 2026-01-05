@@ -1,0 +1,17 @@
+direction: right
+
+# Nodes (Devices and Ports)
+"RT-J3-01": {
+  "lan3:10"
+  "lan2:9"
+}
+"SW-J3-01": {
+  "xe-0/2/0"
+}
+"OCX光-ONU": {
+  "port1"
+}
+
+# Connections
+"RT-J3-01"."lan3:10" -- "SW-J3-01"."xe-0/2/0"
+"OCX光-ONU"."port1" -- "RT-J3-01"."lan2:9"
