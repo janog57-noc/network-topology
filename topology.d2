@@ -1,6 +1,30 @@
 direction: right
 
 # Nodes (Devices and Ports)
+"IDS-J3": {
+  "admin"
+  "ipmi"
+}
+"RT-J3-01": {
+  "lan3:10"
+  "lan2:9"
+}
+"SW-J3-01": {
+  "xe-0/2/3"
+  "mge-0/0/0"
+  "xe-0/1/0"
+  "xe-0/1/1"
+  "xe-0/1/2"
+  "xe-0/1/3"
+  "xe-0/2/0"
+}
+"OCX光-ONU": {
+  "port1"
+}
+"SAKURA-J3-02": {
+  "ge-0/0/0-仮"
+  "ge-0/0/1-仮"
+}
 "SW-J3-02": {
   "mge-0/0/0"
 }
@@ -9,31 +33,9 @@ direction: right
   "ge-0/0/1-仮"
 }
 "AL-J3": {
-  "Admin"
   "internal"
   "external"
-}
-"IDS-J3": {
-  "admin"
-}
-"RT-J3-01": {
-  "lan2:9"
-  "lan3:10"
-}
-"SW-J3-01": {
-  "xe-0/1/0"
-  "xe-0/1/1"
-  "xe-0/1/2"
-  "xe-0/1/3"
-  "xe-0/2/3"
-  "mge-0/0/0"
-}
-"OCX光-ONU": {
-  "port1"
-}
-"SAKURA-J3-02": {
-  "ge-0/0/0-仮"
-  "ge-0/0/1-仮"
+  "Admin"
 }
 
 # Connections
@@ -46,3 +48,4 @@ direction: right
 "SW-J3-01"."xe-0/1/1" -- "AL-J3"."external"
 "SW-J3-01"."xe-0/1/2" -- "AL-J3"."Admin"
 "SW-J3-01"."xe-0/1/3" -- "IDS-J3"."admin"
+"SW-J3-01"."xe-0/2/0" -- "IDS-J3"."ipmi"
