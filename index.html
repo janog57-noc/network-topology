@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Network Topology</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style type="text/css">
+        #mynetwork {
+            width: 100%;
+            height: 95vh;
+            border: 1px solid lightgray;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mynetwork"></div>
+
+    <script type="text/javascript">
+        // JSONデータをfetchして描画
+        fetch('network_data.json')
+            .then(response => response.json())
+            .then(data => {
+                var container = document.getElementById('mynetwork');
+
+                var options = {
+                    nodes: {
+                        shape: 'box',
+                        font: { size: 14, color: '#ffffff' },
+                        color: { background: '#007bff', border: '#0056b3' },
+                        margin: 10
+                    },
+                    edges: {
+                        font: { size: 10, align: 'middle' },
+                        color: { color: '#848484' },
+                        smooth: { type: 'cubicBezier', forceDirection: 'vertical', roundness: 0.4 }
+                    },
+                    layout: {
+                        // ★★★ ここが重要: 階層レイアウトの設定 ★★★
+                        hierarchical: {
+                            enabled: true,
+                            direction: 'UD',       // UD = Up-Down (上から下へ), DU, LR, RL も可能
+                            sortMethod: 'directed', // directed = 接続方向に従う, hubsize = 接続数に従う
+                            levelSeparation: 150,  // 階層間の距離
+                            nodeSpacing: 200       // ノード間の距離
+                        }
+                    },
+                    physics: {
+                        hierarchicalRepulsion: {
+                            nodeDistance: 200
+                        }
+                    }
+                };
+
+                var network = new vis.Network(container, data, options);
+            })
+            .catch(err => console.error('Error loading topology:', err));
+    </script>
+</body>
+
+</html>
