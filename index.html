@@ -84,32 +84,13 @@
                         }
                     },
                     physics: {
-                        hierarchicalRepulsion: {
-                            nodeDistance: 150,
-                            springLength: 50,
-                            damping: 0.09
-                        },
-                        stabilization: {
-                            iterations: 200,
-                            updateInterval: 25
-                        }
+                       enabled: false 
                     },
                     interaction: {
                         navigationButtons: true,
                         keyboard: true
                     }
                 };
-
-                var network = new vis.Network(container, data, options);
-                network.on("stabilizationIterationsDone", function () {
-                    network.setOptions({
-                        layout: { hierarchical: false },
-                        physics: {
-                            enabled: false
-                        }
-                    });
-                    console.log("Layout fixed. Free movement mode enabled.");
-                });
 
                 network.on("dragEnd", function (params) {
                 });
