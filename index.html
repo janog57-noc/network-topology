@@ -2,100 +2,45 @@
 <html>
 
 <head>
-    <title>Network Topology</title>
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <style type="text/css">
-        #mynetwork {
-            width: 100%;
-            height: 98vh;
-            /* 全画面表示 */
-            background-color: #f0f0f0;
-            /* 背景を少しグレーに */
-        }
-
-        body {
+    <title>Physical Network Topology</title>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body,
+        html {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
-        /* 操作パネルの例 */
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        #svg-container {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 
 <body>
-    <div id="controls">
-        <strong>操作ガイド:</strong><br>
-        ・スクロール: 拡大/縮小<br>
-        ・ドラッグ: 移動<br>
-        ・ノードドラッグ: 配置調整
+    <div id="svg-container">
+        <object id="demo-tiger" type="image/svg+xml" data="topology.svg"
+            style="width: 100%; height: 100%; border:1px solid black; "></object>
     </div>
-    <div id="mynetwork"></div>
 
-    <script type="text/javascript">
-        fetch('network_data.json')
-            .then(response => response.json())
-            .then(data => {
-                var container = document.getElementById('mynetwork');
-
-                var options = {
-                    nodes: {
-                        shape: 'box',
-                        margin: 10,
-                        font: {
-                            size: 16,
-                            face: 'monospace', // 等幅フォントで図面っぽく
-                            multi: true // 改行許可
-                        },
-                        borderWidth: 2,
-                        shadow: true
-                    },
-                    edges: {
-                        width: 2,
-                        color: { color: '#555555' }, // 濃いグレー
-                        font: {
-                            size: 11,
-                            color: '#000000',
-                            background: '#ffffff', // 文字の背景を白くして読みやすく
-                            strokeWidth: 0
-                        },
-                        smooth: false
-                    },
-                    layout: {
-                        hierarchical: {
-                            enabled: true,
-                            direction: 'UD',       // 上から下へ (Up-Down)
-                            sortMethod: 'directed', // レベルに従って整列
-                            levelSeparation: 100,   // 上下の間隔
-                            nodeSpacing: 150,       // 左右の間隔
-                            treeSpacing: 250,
-                            blockShifting: true,
-                            edgeMinimization: true,
-                            parentCentralization: true
-                        }
-                    },
-                    physics: {
-                        enabled: false
-                    },
-                    interaction: {
-                        navigationButtons: true,
-                        keyboard: true
-                    }
-                };
-
-                var network = new vis.Network(container, data, options);
-
-                network.on("dragEnd", function (params) {
+    <script>
+        // SVGが読み込まれたら Pan-Zoom 機能を有効化
+        window.onload = function () {
+            var svgElement = document.getElementById('demo-tiger');
+            svgElement.addEventListener('load', function () {
+                svgPanZoom(svgElement, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: true,
+                    fit: true,
+                    center: true
                 });
-            });
+            })
+        };
     </script>
 </body>
 
