@@ -111,18 +111,11 @@ func main() {
 				role := roleMap[name]
 				level := 10
 				
-				// ご自身の環境のSlugに合わせて調整してください
 				switch role {
-				case "edge-router", "router", "firewall":
+				case "nw-prod":
 					level = 0
-				case "core-switch":
+				case "server":
 					level = 1
-				case "distribution-switch":
-					level = 2
-				case "access-switch":
-					level = 3
-				case "wireless-ap", "server":
-					level = 4
 				}
 
 				nodeMap[name] = VisNode{
