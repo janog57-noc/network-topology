@@ -67,20 +67,15 @@
                             background: '#ffffff', // 文字の背景を白くして読みやすく
                             strokeWidth: 0
                         },
-                        smooth: {
-                            // 直線的かつ少し角丸にする設定
-                            type: 'cubicBezier',
-                            forceDirection: 'vertical',
-                            roundness: 0.5
-                        }
+                        smooth: false
                     },
                     layout: {
                         hierarchical: {
                             enabled: true,
                             direction: 'UD',       // 上から下へ (Up-Down)
                             sortMethod: 'directed', // レベルに従って整列
-                            levelSeparation: 180,   // 上下の間隔
-                            nodeSpacing: 250,       // 左右の間隔
+                            levelSeparation: 100,   // 上下の間隔
+                            nodeSpacing: 150,       // 左右の間隔
                             treeSpacing: 250,
                             blockShifting: true,
                             edgeMinimization: true,
@@ -90,7 +85,7 @@
                     physics: {
                         // ドラッグ後の戻りを無効化して、手動配置をしやすくする
                         hierarchicalRepulsion: {
-                            nodeDistance: 250
+                            nodeDistance: 150
                         },
                         stabilization: {
                             iterations: 100
