@@ -7,23 +7,40 @@
     <style type="text/css">
         #mynetwork {
             width: 100%;
-            height: 95vh;
-            border: 1px solid lightgray;
+            height: 98vh;
+            /* 全画面表示 */
+            background-color: #f0f0f0;
+            /* 背景を少しグレーに */
         }
 
         body {
             margin: 0;
-            padding: 0;
-            overflow: hidden;
+        }
+
+        /* 操作パネルの例 */
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 
 <body>
+    <div id="controls">
+        <strong>操作ガイド:</strong><br>
+        ・スクロール: 拡大/縮小<br>
+        ・ドラッグ: 移動<br>
+        ・ノードドラッグ: 配置調整
+    </div>
     <div id="mynetwork"></div>
 
     <script type="text/javascript">
-        // JSONデータをfetchして描画
         fetch('network_data.json')
             .then(response => response.json())
             .then(data => {
@@ -31,36 +48,67 @@
 
                 var options = {
                     nodes: {
-                        shape: 'box',
-                        font: { size: 14, color: '#ffffff' },
-                        color: { background: '#007bff', border: '#0056b3' },
-                        margin: 10
+                        shape: 'box', // PDFのように四角く
+                        margin: 10,
+                        font: {
+                            size: 16,
+                            face: 'monospace', // 等幅フォントで図面っぽく
+                            multi: true // 改行許可
+                        },
+                        borderWidth: 2,
+                        shadow: true
                     },
                     edges: {
-                        font: { size: 10, align: 'middle' },
-                        color: { color: '#848484' },
-                        smooth: { type: 'cubicBezier', forceDirection: 'vertical', roundness: 0.4 }
+                        width: 2,
+                        color: { color: '#555555' }, // 濃いグレー
+                        font: {
+                            size: 11,
+                            color: '#000000',
+                            background: '#ffffff', // 文字の背景を白くして読みやすく
+                            strokeWidth: 0
+                        },
+                        smooth: {
+                            // 直線的かつ少し角丸にする設定
+                            type: 'cubicBezier',
+                            forceDirection: 'vertical',
+                            roundness: 0.5
+                        }
                     },
                     layout: {
-                        // ★★★ ここが重要: 階層レイアウトの設定 ★★★
                         hierarchical: {
                             enabled: true,
-                            direction: 'UD',       // UD = Up-Down (上から下へ), DU, LR, RL も可能
-                            sortMethod: 'directed', // directed = 接続方向に従う, hubsize = 接続数に従う
-                            levelSeparation: 150,  // 階層間の距離
-                            nodeSpacing: 200       // ノード間の距離
+                            direction: 'UD',       // 上から下へ (Up-Down)
+                            sortMethod: 'directed', // レベルに従って整列
+                            levelSeparation: 180,   // 上下の間隔
+                            nodeSpacing: 250,       // 左右の間隔
+                            treeSpacing: 250,
+                            blockShifting: true,
+                            edgeMinimization: true,
+                            parentCentralization: true
                         }
                     },
                     physics: {
+                        // ドラッグ後の戻りを無効化して、手動配置をしやすくする
                         hierarchicalRepulsion: {
-                            nodeDistance: 200
+                            nodeDistance: 250
+                        },
+                        stabilization: {
+                            iterations: 100
                         }
+                    },
+                    interaction: {
+                        navigationButtons: true,
+                        keyboard: true
                     }
                 };
 
                 var network = new vis.Network(container, data, options);
-            })
-            .catch(err => console.error('Error loading topology:', err));
+
+                // ドラッグ終了時に物理演算を止める（位置を固定したい場合）
+                network.on("dragEnd", function (params) {
+                    // network.setOptions( { physics: false } );
+                });
+            });
     </script>
 </body>
 
