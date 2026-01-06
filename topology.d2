@@ -1,60 +1,62 @@
 direction: right
 
 # Nodes (Devices and Ports)
+"SW-J3-02": {
+  "mge-0/0/0"
+}
+"AL-J3": {
+  "Admin"
+  "ipmi"
+  "internal"
+  "external"
+}
+"SAKURA-J3-01": {
+  "ge-0/0/1-仮"
+}
+"ZABBIX-01": {
+  "lan0"
+}
+"SV-J3": {
+  "ipmi"
+  "port-1"
+}
 "SAKURA-J3-02": {
   "ge-0/0/0-仮"
   "ge-0/0/1-仮"
-}
-"SW-J3-02": {
-  "mge-0/0/0"
 }
 "IDS-J3": {
   "admin"
   "ipmi"
 }
 "MPE-J3": {
-  "Admin"
   "ipmi"
-}
-"ZABBIX-01": {
-  "lan0"
+  "Admin"
 }
 "NTP-J3": {
   "lan0"
 }
-"SV-J3": {
-  "port-1"
+"ZABBIX-PROXY-01": {
+  "eth1"
 }
 "RT-J3-01": {
   "lan2:9"
   "lan3:10"
 }
 "SW-J3-01": {
-  "mge-0/0/1"
-  "mge-0/0/5"
-  "xe-0/1/0"
-  "xe-0/1/3"
-  "xe-0/2/0"
-  "mge-0/0/2"
-  "mge-0/0/6"
+  "mge-0/0/7"
   "xe-0/2/3"
   "mge-0/0/0"
-  "xe-0/1/1"
-  "xe-0/1/2"
+  "xe-0/2/0"
+  "mge-0/0/2"
   "mge-0/0/4"
   "mge-0/0/3"
-}
-"AL-J3": {
-  "ipmi"
-  "internal"
-  "external"
-  "Admin"
-}
-"SAKURA-J3-01": {
-  "ge-0/0/1-仮"
-}
-"ZABBIX-PROXY-01": {
-  "eth1"
+  "mge-0/0/6"
+  "mge-0/0/5"
+  "xe-0/1/0"
+  "xe-0/1/1"
+  "xe-0/1/2"
+  "xe-0/1/3"
+  "mge-0/0/1"
 }
 "OCX光-ONU": {
   "port1"
@@ -77,3 +79,4 @@ direction: right
 "SW-J3-01"."mge-0/0/6" -- "SV-J3"."port-1"
 "SW-J3-01"."mge-0/0/1" -- "IDS-J3"."ipmi"
 "SW-J3-01"."mge-0/0/5" -- "ZABBIX-PROXY-01"."eth1"
+"SW-J3-01"."mge-0/0/7" -- "SV-J3"."ipmi"
