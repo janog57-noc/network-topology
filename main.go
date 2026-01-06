@@ -49,17 +49,16 @@ type VisNode struct {
 	Id    string `json:"id"`
 	Label string `json:"label"`
 	Group string `json:"group"`
-	Level int    `json:"level"`
 }
 type VisEdge struct {
-	From   string `json:"from"`
-	To     string `json:"to"`
-	Label  string `json:"label"`
-	Arrows string `json:"arrows,omitempty"`
-    Font   EdgeFont `json:"font,omitempty"`
+	From   string   `json:"from"`
+	To     string   `json:"to"`
+	Label  string   `json:"label"`
+	Arrows string   `json:"arrows,omitempty"`
+	Font   EdgeFont `json:"font,omitempty"`
 }
 type EdgeFont struct {
-    Align string `json:"align"`
+	Align string `json:"align"`
 }
 
 func main() {
@@ -88,7 +87,9 @@ func main() {
 		req, _ := http.NewRequest("GET", NetboxURL+"/api/dcim/cables/?limit=0", nil)
 		req.Header.Set("Authorization", "Token "+NetboxToken)
 		resp, err := client.Do(req)
-		if err != nil { panic(err) }
+		if err != nil {
+			panic(err)
+		}
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
 		json.Unmarshal(body, &cables)
@@ -99,7 +100,9 @@ func main() {
 	var edges []VisEdge
 
 	for _, cable := range cables.Results {
-		if len(cable.ATerminations) == 0 || len(cable.BTerminations) == 0 { continue }
+		if len(cable.ATerminations) == 0 || len(cable.BTerminations) == 0 {
+			continue
+		}
 		termA := cable.ATerminations[0].Object
 		termB := cable.BTerminations[0].Object
 		devA := termA.Device.Name
@@ -109,20 +112,11 @@ func main() {
 		createNode := func(name string) {
 			if _, exists := nodeMap[name]; !exists {
 				role := roleMap[name]
-				level := 10
-				
-				switch role {
-				case "nw-prod":
-					level = 0
-				case "server":
-					level = 1
-				}
 
 				nodeMap[name] = VisNode{
 					Id:    name,
 					Label: name + "\n(" + role + ")",
 					Group: role,
-					Level: level,
 				}
 			}
 		}
@@ -134,7 +128,7 @@ func main() {
 			From:  devA,
 			To:    devB,
 			Label: fmt.Sprintf(" %s \n %s ", termA.Name, termB.Name),
-            Font:  EdgeFont{Align: "horizontal"},
+			Font:  EdgeFont{Align: "horizontal"},
 		})
 	}
 
@@ -147,6 +141,6 @@ func main() {
 	file, _ := os.Create("network_data.json")
 	defer file.Close()
 	json.NewEncoder(file).Encode(VisData{Nodes: nodes, Edges: edges})
-    
-    fmt.Println("Generated network_data.json with levels")
+
+	fmt.Println("Generated network_data.json")
 }
