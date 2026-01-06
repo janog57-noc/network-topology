@@ -84,7 +84,7 @@
                         }
                     },
                     physics: {
-                       enabled: false 
+                        enabled: false
                     },
                     interaction: {
                         navigationButtons: true,
@@ -92,7 +92,11 @@
                     }
                 };
 
+                var network = new vis.Network(container, data, options);
+
+                // ドラッグ終了時に物理演算を止める（位置を固定したい場合）1
                 network.on("dragEnd", function (params) {
+                    // network.setOptions( { physics: false } );
                 });
             });
     </script>
