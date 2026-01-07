@@ -42,7 +42,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		id   int
 		name string
 	}{
-		{10, "VLAN 10"}, {20, "VLAN 20"}, {30, "VLAN 30"}, {40, "VLAN 40"},
+		{10, "VLAN 10"}, {20, "VLAN 20"}, {30, "VLAN 30"}, {40, "VLAN 40"}, {100, "VLAN 100"},
 	}
 	for _, v := range vlanList {
 		color := style.GetVlanColor(v.id)
@@ -78,10 +78,15 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 				portRow += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
 				portRow += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
 				portRow += "<TR>"
-				widthPercent := 100.0 / float64(len(vlans))
-				for _, vlan := range vlans {
+				base := 100 / len(vlans)
+				remainder := 100 - base*(len(vlans)-1)
+				for i, vlan := range vlans {
 					color := style.GetVlanColor(vlan)
-					portRow += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%.1f%%" HEIGHT="45"></TD>`, color, widthPercent)
+					w := base
+					if i == len(vlans)-1 {
+						w = remainder
+					}
+					portRow += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d%%" HEIGHT="45"></TD>`, color, w)
 				}
 				portRow += "</TR></TABLE></TD>"
 			}
@@ -89,7 +94,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		portRow += "</TR>"
 
 		// Header row
-		headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80" ALIGN="CENTER" VALIGN="MIDDLE"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
+		headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80" ALIGN="CENTER" VALIGN="MIDDLE"><B><FONT COLOR="%s" POINT-SIZE="96">%s</FONT></B></TD></TR>`,
 			len(ports), theme.Header, theme.Text, dev.Name)
 
 		// Add rows in appropriate order
