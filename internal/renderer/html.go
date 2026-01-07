@@ -15,25 +15,25 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
 		return err
 	}
 
-    type ConnJSON struct {
-        SrcDev    string `json:"src_dev"`
-        SrcPort   string `json:"src_port"`
-        SrcPortID string `json:"src_port_id"`
-        DstDev    string `json:"dst_dev"`
-        DstPort   string `json:"dst_port"`
-        DstPortID string `json:"dst_port_id"`
-    }
+	type ConnJSON struct {
+		SrcDev    string `json:"src_dev"`
+		SrcPort   string `json:"src_port"`
+		SrcPortID string `json:"src_port_id"`
+		DstDev    string `json:"dst_dev"`
+		DstPort   string `json:"dst_port"`
+		DstPortID string `json:"dst_port_id"`
+	}
 	var connList []ConnJSON
-    for _, conn := range data.Connections {
-        connList = append(connList, ConnJSON{
-            SrcDev:    conn.SrcDev,
-            SrcPort:   conn.SrcPort,
-            SrcPortID: utils.Escape(conn.SrcPort),
-            DstDev:    conn.DstDev,
-            DstPort:   conn.DstPort,
-            DstPortID: utils.Escape(conn.DstPort),
-        })
-    }
+	for _, conn := range data.Connections {
+		connList = append(connList, ConnJSON{
+			SrcDev:    conn.SrcDev,
+			SrcPort:   conn.SrcPort,
+			SrcPortID: utils.Escape(conn.SrcPort),
+			DstDev:    conn.DstDev,
+			DstPort:   conn.DstPort,
+			DstPortID: utils.Escape(conn.DstPort),
+		})
+	}
 	connJSON, _ := json.Marshal(connList)
 
 	htmlContent := fmt.Sprintf(`<!DOCTYPE html>
