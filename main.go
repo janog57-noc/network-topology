@@ -38,6 +38,14 @@ type DeviceData struct {
 	Ports map[string]bool
 }
 
+// カラーパレット構造体
+type ThemeColor struct {
+	Header   string
+	Border   string
+	Text     string
+	PortFill string
+}
+
 func main() {
 	// 1. NetBoxデータ取得
 	client := &http.Client{}
@@ -89,19 +97,25 @@ func main() {
 	file, _ := os.Create("topology.dot")
 	defer file.Close()
 
-	// --- ライトテーマ設定 ---
+	// --- Graphviz設定 (ここがズレ解消の肝) ---
 	file.WriteString("digraph NetworkTopology {\n")
 	file.WriteString("  bgcolor=\"#FFFFFF\";\n") // 背景: 白
 	file.WriteString("  rankdir=TB;\n")         // Top to Bottom
-	file.WriteString("  nodesep=0.8;\n")        // ノード間の横幅
-	file.WriteString("  ranksep=1.2;\n")        // 階層間の縦幅
-	file.WriteString("  splines=ortho;\n")      // カクカクした配線
 	
-	// ノードフォント設定 (黒文字)
-	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontcolor=\"black\"];\n")
+	// ★★★ ズレ解消ポイント1: 間隔を広げる ★★★
+	// 狭いとGraphvizが線を束ねてしまい、ポート位置がズレます
+	file.WriteString("  nodesep=1.5;\n")        // ノード間の横幅 (0.8 -> 1.5)
+	file.WriteString("  ranksep=2.5;\n")        // 階層間の縦幅 (1.2 -> 2.5)
 	
-	// エッジ設定 (線はダークグレー)
-	file.WriteString("  edge [dir=none style=solid penwidth=2.0 color=\"#555555\"];\n") 
+	// 直角配線設定
+	file.WriteString("  splines=ortho;\n")      
+	file.WriteString("  concentrate=false;\n")  // 線をまとめない（正確にポートにつなぐため）
+	
+	// ノードフォント設定
+	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontsize=12];\n")
+	
+	// エッジ設定
+	file.WriteString("  edge [dir=none style=solid penwidth=1.5 color=\"#888888\"];\n") 
 
 	// ノード書き込み
 	for _, dev := range devices {
@@ -111,23 +125,24 @@ func main() {
 		}
 		sort.Strings(ports)
 
-		// 色の決定 (ヘッダー色のみ取得)
-		headerColor := getHeaderColor(dev.Role)
+		// 配色の取得
+		theme := getTheme(dev.Role)
 
-		// HTML Label (全体枠線は薄いグレー)
-		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" COLOR="#888888" BGCOLOR="#FFFFFF">`)
+		// HTML Label
+		// BORDER="0" にしつつ、枠線色はデバイスの種類に合わせる
+		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
 		
-		// ヘッダー行 (背景色あり、文字は白で強調)
-		// POINT-SIZEでフォントサイズ調整
-		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="30"><B><FONT COLOR="#FFFFFF" POINT-SIZE="14">%s</FONT></B></TD></TR>`, 
-			len(ports), headerColor, dev.Name)
+		// ヘッダー行 (角丸はGraphvizのHTMLラベルではできないが、色で表現)
+		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="35" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="14"> %s </FONT></B></TD></TR>`, 
+			len(ports), theme.Header, theme.Text, dev.Name)
 		
 		// ポート一覧行
 		label += "<TR>"
 		for _, p := range ports {
-			// ポートセル: 背景は非常に薄いグレー(#F9F9F9)、文字は黒
-			// WIDTHを高めに設定してクリックしやすく
-			label += fmt.Sprintf(`<TD PORT="%s" WIDTH="40" HEIGHT="24" BGCOLOR="#F9F9F9"><FONT COLOR="#000000" POINT-SIZE="10">%s</FONT></TD>`, escape(p), p)
+			// ★★★ ズレ解消ポイント2: ポート幅を確保 ★★★
+			// WIDTH="60" などを指定し、ターゲットを大きくする
+			label += fmt.Sprintf(`<TD PORT="%s" WIDTH="60" HEIGHT="26" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="10">%s</FONT></TD>`, 
+				escape(p), theme.PortFill, theme.Border, p)
 		}
 		label += "</TR></TABLE>>"
 
@@ -136,11 +151,11 @@ func main() {
 
 	// 接続書き込み
 	for _, conn := range connections {
-		srcComp := ":s" // 上位は下から出す
-		dstComp := ":n" // 下位は上から受ける
+		srcComp := ":s"
+		dstComp := ":n"
 
 		if conn.SrcLevel == conn.DstLevel {
-			dstComp = ":s" // 同階層なら下-下接続
+			dstComp = ":s" 
 		}
 
 		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s`, 
@@ -169,22 +184,30 @@ func getRoleLevel(role string) int {
 	return 99
 }
 
-func getHeaderColor(role string) string {
+// モダンで鮮やかなカラーパレット
+func getTheme(role string) ThemeColor {
 	switch {
 	case strings.Contains(role, "router") || strings.Contains(role, "firewall") || strings.Contains(role, "onu"):
-		return "#D9534F" // Bootstrap Red (Router)
+		// Vivid Pink/Red
+		return ThemeColor{Header: "#FF4757", Border: "#FF4757", Text: "#FFFFFF", PortFill: "#FFF0F1"}
 	case strings.Contains(role, "core"):
-		return "#F0AD4E" // Bootstrap Orange (Core)
+		// Vibrant Orange
+		return ThemeColor{Header: "#FFA502", Border: "#FFA502", Text: "#FFFFFF", PortFill: "#FFF6E5"}
 	case strings.Contains(role, "distribution"):
-		return "#5BC0DE" // Bootstrap Cyan (Dist)
+		// Teal / Turquoise
+		return ThemeColor{Header: "#2ED573", Border: "#2ED573", Text: "#FFFFFF", PortFill: "#EAFAF1"}
 	case strings.Contains(role, "access"):
-		return "#428BCA" // Bootstrap Blue (Access)
+		// Modern Blue
+		return ThemeColor{Header: "#1E90FF", Border: "#1E90FF", Text: "#FFFFFF", PortFill: "#F0F8FF"}
 	case strings.Contains(role, "ap"):
-		return "#9B59B6" // Purple (Wireless)
+		// Vivid Purple
+		return ThemeColor{Header: "#5352ED", Border: "#5352ED", Text: "#FFFFFF", PortFill: "#F3F3FF"}
 	case strings.Contains(role, "server"):
-		return "#777777" // Grey (Server)
+		// Slate Gray
+		return ThemeColor{Header: "#57606F", Border: "#57606F", Text: "#FFFFFF", PortFill: "#F1F2F6"}
 	default:
-		return "#333333" // Dark Grey (Others)
+		// Default Gray
+		return ThemeColor{Header: "#747D8C", Border: "#747D8C", Text: "#FFFFFF", PortFill: "#FFFFFF"}
 	}
 }
 
