@@ -146,6 +146,11 @@ func shouldFlipLabel(tag, deviceName string) bool {
 		"SW-J6-04": true,
 		"SW-J6-05": true,
 		// C系
+		"SW-C-06": true,
+		"SW-C-07": true,
+		"SW-C-08": true,
+		"SW-C-09": true,
+		"SW-C-11": true,
 		"SW-C-14": true,
 	}
 	return flipDevices[deviceName]
