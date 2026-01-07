@@ -9,7 +9,7 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 2130.25)">
 <title>NetworkTopology</title>
 <polygon fill="#ffffff" stroke="none" points="-4,4 -4,-2130.25 6475.88,-2130.25 6475.88,4 -4,4"/>
-<text xml:space="preserve" text-anchor="middle" x="5797.12" y="-2065.25" font-family="Times,serif" font-size="60.00">Network Topology &#45; Generated at 2026&#45;01&#45;07 13:45:57</text>
+<text xml:space="preserve" text-anchor="middle" x="5797.12" y="-2065.25" font-family="Times,serif" font-size="60.00">Network Topology &#45; Generated at 2026&#45;01&#45;07 13:53:36</text>
 <!-- VLANLegend -->
 <g id="node1" class="node">
 <title>VLANLegend</title>
@@ -33,72 +33,8 @@
 <polygon fill="none" stroke="black" stroke-width="3" points="5253.75,-1485.25 5253.75,-1592.75 5627.12,-1592.75 5627.12,-1485.25 5253.75,-1485.25"/>
 <text xml:space="preserve" text-anchor="start" x="5275.25" y="-1511.45" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="64.00">VLAN 40</text>
 </g>
-<!-- OCX光&#45;ONU -->
-<g id="node2" class="node">
-<title>OCX光&#45;ONU</title>
-<polygon fill="#ffffff" stroke="none" points="5780.38,-1646.38 5780.38,-1884.12 6413.38,-1884.12 6413.38,-1646.38 5780.38,-1646.38"/>
-<polygon fill="#00bcd4" stroke="none" points="5780.38,-1746.88 5780.38,-1884.12 6413.38,-1884.12 6413.38,-1746.88 5780.38,-1746.88"/>
-<text xml:space="preserve" text-anchor="start" x="5795.38" y="-1778.92" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> OCX光&#45;ONU </text>
-<polygon fill="#e0f7fa" stroke="none" points="5780.38,-1646.38 5780.38,-1746.88 6413.38,-1746.88 6413.38,-1646.38 5780.38,-1646.38"/>
-<polygon fill="none" stroke="#00bcd4" stroke-width="3" points="5781.88,-1647.88 5781.88,-1745.38 6411.88,-1745.38 6411.88,-1647.88 5781.88,-1647.88"/>
-<text xml:space="preserve" text-anchor="start" x="6024.5" y="-1668.08" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">port1</text>
-</g>
-<!-- RT&#45;J3&#45;01 -->
-<g id="node7" class="node">
-<title>RT&#45;J3&#45;01</title>
-<polygon fill="#ffffff" stroke="none" points="5984,-991.5 5984,-1263.75 6467.75,-1263.75 6467.75,-991.5 5984,-991.5"/>
-<polygon fill="#ff4757" stroke="none" points="5984,-1137 5984,-1263.75 6467.75,-1263.75 6467.75,-1137 5984,-1137"/>
-<text xml:space="preserve" text-anchor="start" x="5999" y="-1158.55" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> RT&#45;J3&#45;01 </text>
-<polygon fill="#fff0f1" stroke="none" points="5984,-991.5 5984,-1137 6208.25,-1137 6208.25,-991.5 5984,-991.5"/>
-<polygon fill="none" stroke="#ff4757" stroke-width="3" points="5985.5,-993 5985.5,-1135.5 6206.75,-1135.5 6206.75,-993 5985.5,-993"/>
-<text xml:space="preserve" text-anchor="start" x="6009.5" y="-1035.7" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan2:9</text>
-<polygon fill="none" stroke="#ff4757" stroke-width="3" points="6209.75,-993 6209.75,-1135.5 6466.25,-1135.5 6466.25,-993 6209.75,-993"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="6226.25,-1054.5 6226.25,-1119 6449.75,-1119 6449.75,-1054.5 6226.25,-1054.5"/>
-<text xml:space="preserve" text-anchor="start" x="6233.75" y="-1058.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan3:10</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="6226.25,-1009.5 6226.25,-1054.5 6282.12,-1054.5 6282.12,-1009.5 6226.25,-1009.5"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="6282.12,-1009.5 6282.12,-1054.5 6338,-1054.5 6338,-1009.5 6282.12,-1009.5"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="6338,-1009.5 6338,-1054.5 6393.88,-1054.5 6393.88,-1009.5 6338,-1009.5"/>
-<polygon fill="#ffd43b" stroke="none" stroke-width="3" points="6393.88,-1009.5 6393.88,-1054.5 6449.75,-1054.5 6449.75,-1009.5 6393.88,-1009.5"/>
-</g>
-<!-- OCX光&#45;ONU&#45;&gt;RT&#45;J3&#45;01 -->
-<g id="edge2" class="edge">
-<title>OCX光&#45;ONU:c&#45;&gt;RT&#45;J3&#45;01:c</title>
-<path fill="none" stroke="#ff4757" stroke-width="8" d="M6096.82,-1646.42C6096.68,-1535.66 6096.36,-1266.35 6096.21,-1136.96"/>
-</g>
-<!-- SAKURA&#45;J3&#45;01 -->
-<g id="node3" class="node">
-<title>SAKURA&#45;J3&#45;01</title>
-<polygon fill="#ffffff" stroke="none" points="657.75,0 657.75,-279.75 1428,-279.75 1428,0 657.75,0"/>
-<polygon fill="#1e90ff" stroke="none" points="657.75,-153 657.75,-279.75 1428,-279.75 1428,-153 657.75,-153"/>
-<text xml:space="preserve" text-anchor="start" x="672.75" y="-174.55" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SAKURA&#45;J3&#45;01 </text>
-<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="659.25,-1.5 659.25,-151.5 1041.38,-151.5 1041.38,-1.5 659.25,-1.5"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="675.75,-63 675.75,-135 1024.88,-135 1024.88,-63 675.75,-63"/>
-<text xml:space="preserve" text-anchor="start" x="691.31" y="-74.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/0&#45;仮</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="675.75,-18 675.75,-63 792.12,-63 792.12,-18 675.75,-18"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="792.12,-18 792.12,-63 908.5,-63 908.5,-18 792.12,-18"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="908.5,-18 908.5,-63 1024.88,-63 1024.88,-18 908.5,-18"/>
-<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="1044.38,-1.5 1044.38,-151.5 1426.5,-151.5 1426.5,-1.5 1044.38,-1.5"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="1060.88,-63 1060.88,-135 1410,-135 1410,-63 1060.88,-63"/>
-<text xml:space="preserve" text-anchor="start" x="1076.44" y="-74.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/1&#45;仮</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="1060.88,-18 1060.88,-63 1177.25,-63 1177.25,-18 1060.88,-18"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="1177.25,-18 1177.25,-63 1293.62,-63 1293.62,-18 1177.25,-18"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="1293.62,-18 1293.62,-63 1410,-63 1410,-18 1293.62,-18"/>
-</g>
-<!-- MPE&#45;J3 -->
-<g id="node4" class="node">
-<title>MPE&#45;J3</title>
-<polygon fill="#ffffff" stroke="none" points="2656.62,-26.25 2656.62,-253.5 3087.12,-253.5 3087.12,-26.25 2656.62,-26.25"/>
-<polygon fill="#57606f" stroke="none" points="2656.62,-126.75 2656.62,-253.5 3087.12,-253.5 3087.12,-126.75 2656.62,-126.75"/>
-<text xml:space="preserve" text-anchor="start" x="2671.62" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> MPE&#45;J3 </text>
-<polygon fill="#51cf66" stroke="none" points="2656.62,-26.25 2656.62,-126.75 2903.75,-126.75 2903.75,-26.25 2656.62,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="2658.12,-27.75 2658.12,-125.25 2902.25,-125.25 2902.25,-27.75 2658.12,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="2689.81" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">Admin</text>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="2903.75,-26.25 2903.75,-126.75 3087.12,-126.75 3087.12,-26.25 2903.75,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="2905.25,-27.75 2905.25,-125.25 3085.62,-125.25 3085.62,-27.75 2905.25,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="2936.94" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
-</g>
 <!-- ZABBIX&#45;01 -->
-<g id="node5" class="node">
+<g id="node2" class="node">
 <title>ZABBIX&#45;01</title>
 <polygon fill="#ffffff" stroke="none" points="3231.38,-26.25 3231.38,-253.5 3810.38,-253.5 3810.38,-26.25 3231.38,-26.25"/>
 <polygon fill="#57606f" stroke="none" points="3231.38,-126.75 3231.38,-253.5 3810.38,-253.5 3810.38,-126.75 3231.38,-126.75"/>
@@ -107,18 +43,21 @@
 <polygon fill="none" stroke="#57606f" stroke-width="3" points="3232.88,-27.75 3232.88,-125.25 3808.88,-125.25 3808.88,-27.75 3232.88,-27.75"/>
 <text xml:space="preserve" text-anchor="start" x="3460.88" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan0</text>
 </g>
-<!-- ZABBIX&#45;PROXY&#45;01 -->
-<g id="node6" class="node">
-<title>ZABBIX&#45;PROXY&#45;01</title>
-<polygon fill="#ffffff" stroke="none" points="3954.25,-26.25 3954.25,-253.5 4895.5,-253.5 4895.5,-26.25 3954.25,-26.25"/>
-<polygon fill="#57606f" stroke="none" points="3954.25,-126.75 3954.25,-253.5 4895.5,-253.5 4895.5,-126.75 3954.25,-126.75"/>
-<text xml:space="preserve" text-anchor="start" x="3969.25" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> ZABBIX&#45;PROXY&#45;01 </text>
-<polygon fill="#ff6b6b" stroke="none" points="3954.25,-26.25 3954.25,-126.75 4895.5,-126.75 4895.5,-26.25 3954.25,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="3955.75,-27.75 3955.75,-125.25 4894,-125.25 4894,-27.75 3955.75,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="4363" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">eth1</text>
+<!-- SV&#45;J3 -->
+<g id="node3" class="node">
+<title>SV&#45;J3</title>
+<polygon fill="#ffffff" stroke="none" points="5039.5,-26.25 5039.5,-253.5 5394.25,-253.5 5394.25,-26.25 5039.5,-26.25"/>
+<polygon fill="#57606f" stroke="none" points="5039.5,-126.75 5039.5,-253.5 5394.25,-253.5 5394.25,-126.75 5039.5,-126.75"/>
+<text xml:space="preserve" text-anchor="start" x="5059.38" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SV&#45;J3 </text>
+<polygon fill="#4dabf7" stroke="none" points="5039.5,-26.25 5039.5,-126.75 5192.5,-126.75 5192.5,-26.25 5039.5,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="5041,-27.75 5041,-125.25 5191,-125.25 5191,-27.75 5041,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="5057.5" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="5192.5,-26.25 5192.5,-126.75 5394.25,-126.75 5394.25,-26.25 5192.5,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="5194,-27.75 5194,-125.25 5392.75,-125.25 5392.75,-27.75 5194,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="5210.5" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">port&#45;1</text>
 </g>
 <!-- SW&#45;J3&#45;01 -->
-<g id="node14" class="node">
+<g id="node4" class="node">
 <title>SW&#45;J3&#45;01</title>
 <polygon fill="#ffffff" stroke="none" points="1989.88,-499.5 1989.88,-771.75 6471.88,-771.75 6471.88,-499.5 1989.88,-499.5"/>
 <polygon fill="#ffa502" stroke="none" points="1989.88,-645 1989.88,-771.75 6471.88,-771.75 6471.88,-645 1989.88,-645"/>
@@ -176,55 +115,123 @@
 <polygon fill="#51cf66" stroke="none" stroke-width="3" points="6338.75,-517.5 6338.75,-562.5 6396.31,-562.5 6396.31,-517.5 6338.75,-517.5"/>
 <polygon fill="#ffd43b" stroke="none" stroke-width="3" points="6396.31,-517.5 6396.31,-562.5 6453.88,-562.5 6453.88,-517.5 6396.31,-517.5"/>
 </g>
-<!-- RT&#45;J3&#45;01&#45;&gt;SW&#45;J3&#45;01 -->
-<g id="edge1" class="edge">
-<title>RT&#45;J3&#45;01:c&#45;&gt;SW&#45;J3&#45;01:c</title>
-<path fill="none" stroke="#ffa502" stroke-width="8" d="M6338.11,-991.74C6338.25,-898.9 6338.5,-737.81 6338.64,-644.9"/>
+<!-- SW&#45;J3&#45;01&#45;&gt;ZABBIX&#45;01 -->
+<g id="edge12" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;ZABBIX&#45;01:c</title>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M3713.06,-499.72C3666.77,-398.03 3583.14,-214.29 3543.24,-126.62"/>
 </g>
-<!-- SAKURA&#45;J3&#45;02 -->
+<!-- SW&#45;J3&#45;01&#45;&gt;SV&#45;J3 -->
+<g id="edge14" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;SV&#45;J3:c</title>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M4541.43,-499.63C4659.03,-442.69 4825.7,-359.61 4967.88,-279.75 5055.61,-230.47 5153.29,-168.82 5218.55,-126.62"/>
+</g>
+<!-- SW&#45;J3&#45;01&#45;&gt;SV&#45;J3 -->
+<g id="edge17" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;SV&#45;J3:c</title>
+<path fill="none" stroke="#4dabf7" stroke-width="8" d="M4778.76,-499.66C4831.29,-441.54 4906.12,-356.87 4967.88,-279.75 5008.68,-228.79 5052.52,-168.11 5081.83,-126.6"/>
+</g>
+<!-- SAKURA&#45;J3&#45;01 -->
+<g id="node7" class="node">
+<title>SAKURA&#45;J3&#45;01</title>
+<polygon fill="#ffffff" stroke="none" points="657.75,0 657.75,-279.75 1428,-279.75 1428,0 657.75,0"/>
+<polygon fill="#1e90ff" stroke="none" points="657.75,-153 657.75,-279.75 1428,-279.75 1428,-153 657.75,-153"/>
+<text xml:space="preserve" text-anchor="start" x="672.75" y="-174.55" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SAKURA&#45;J3&#45;01 </text>
+<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="659.25,-1.5 659.25,-151.5 1041.38,-151.5 1041.38,-1.5 659.25,-1.5"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="675.75,-63 675.75,-135 1024.88,-135 1024.88,-63 675.75,-63"/>
+<text xml:space="preserve" text-anchor="start" x="691.31" y="-74.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/0&#45;仮</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="675.75,-18 675.75,-63 792.12,-63 792.12,-18 675.75,-18"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="792.12,-18 792.12,-63 908.5,-63 908.5,-18 792.12,-18"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="908.5,-18 908.5,-63 1024.88,-63 1024.88,-18 908.5,-18"/>
+<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="1044.38,-1.5 1044.38,-151.5 1426.5,-151.5 1426.5,-1.5 1044.38,-1.5"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="1060.88,-63 1060.88,-135 1410,-135 1410,-63 1060.88,-63"/>
+<text xml:space="preserve" text-anchor="start" x="1076.44" y="-74.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/1&#45;仮</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="1060.88,-18 1060.88,-63 1177.25,-63 1177.25,-18 1060.88,-18"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="1177.25,-18 1177.25,-63 1293.62,-63 1293.62,-18 1177.25,-18"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="1293.62,-18 1293.62,-63 1410,-63 1410,-18 1293.62,-18"/>
+</g>
+<!-- SW&#45;J3&#45;01&#45;&gt;SAKURA&#45;J3&#45;01 -->
+<g id="edge18" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;SAKURA&#45;J3&#45;01:c</title>
+<path fill="none" stroke="#ff6b6b" stroke-width="8" d="M1990.14,-513.16C1754.45,-423.08 1301.14,-249.81 1042.87,-151.1"/>
+</g>
+<!-- IDS&#45;J3 -->
 <g id="node8" class="node">
-<title>SAKURA&#45;J3&#45;02</title>
-<polygon fill="#ffffff" stroke="none" points="430.75,-495.75 430.75,-775.5 1201,-775.5 1201,-495.75 430.75,-495.75"/>
-<polygon fill="#1e90ff" stroke="none" points="430.75,-648.75 430.75,-775.5 1201,-775.5 1201,-648.75 430.75,-648.75"/>
-<text xml:space="preserve" text-anchor="start" x="445.75" y="-670.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SAKURA&#45;J3&#45;02 </text>
-<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="432.25,-497.25 432.25,-647.25 814.38,-647.25 814.38,-497.25 432.25,-497.25"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="448.75,-558.75 448.75,-630.75 797.88,-630.75 797.88,-558.75 448.75,-558.75"/>
-<text xml:space="preserve" text-anchor="start" x="464.31" y="-569.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/0&#45;仮</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="448.75,-513.75 448.75,-558.75 565.12,-558.75 565.12,-513.75 448.75,-513.75"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="565.12,-513.75 565.12,-558.75 681.5,-558.75 681.5,-513.75 565.12,-513.75"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="681.5,-513.75 681.5,-558.75 797.88,-558.75 797.88,-513.75 681.5,-513.75"/>
-<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="817.38,-497.25 817.38,-647.25 1199.5,-647.25 1199.5,-497.25 817.38,-497.25"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="833.88,-558.75 833.88,-630.75 1183,-630.75 1183,-558.75 833.88,-558.75"/>
-<text xml:space="preserve" text-anchor="start" x="849.44" y="-569.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/1&#45;仮</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="833.88,-513.75 833.88,-558.75 950.25,-558.75 950.25,-513.75 833.88,-513.75"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="950.25,-513.75 950.25,-558.75 1066.62,-558.75 1066.62,-513.75 950.25,-513.75"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="1066.62,-513.75 1066.62,-558.75 1183,-558.75 1183,-513.75 1066.62,-513.75"/>
+<title>IDS&#45;J3</title>
+<polygon fill="#ffffff" stroke="none" points="2129.62,-26.25 2129.62,-253.5 2512.12,-253.5 2512.12,-26.25 2129.62,-26.25"/>
+<polygon fill="#57606f" stroke="none" points="2129.62,-126.75 2129.62,-253.5 2512.12,-253.5 2512.12,-126.75 2129.62,-126.75"/>
+<text xml:space="preserve" text-anchor="start" x="2144.62" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> IDS&#45;J3 </text>
+<polygon fill="#51cf66" stroke="none" points="2129.62,-26.25 2129.62,-126.75 2349,-126.75 2349,-26.25 2129.62,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="2131.12,-27.75 2131.12,-125.25 2347.5,-125.25 2347.5,-27.75 2131.12,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="2152.69" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">admin</text>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="2349,-26.25 2349,-126.75 2512.12,-126.75 2512.12,-26.25 2349,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="2350.5,-27.75 2350.5,-125.25 2510.62,-125.25 2510.62,-27.75 2350.5,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="2372.06" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
 </g>
-<!-- SAKURA&#45;J3&#45;02&#45;&gt;SAKURA&#45;J3&#45;01 -->
-<g id="edge5" class="edge">
-<title>SAKURA&#45;J3&#45;02:c&#45;&gt;SAKURA&#45;J3&#45;01:c</title>
-<path fill="none" stroke="#1e90ff" stroke-width="8" d="M716.61,-495.99C831.83,-403.06 1026.66,-245.91 1141.95,-152.9"/>
+<!-- SW&#45;J3&#45;01&#45;&gt;IDS&#45;J3 -->
+<g id="edge9" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;IDS&#45;J3:c</title>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M5673.41,-566.94C5142.75,-548.55 3175.17,-468.76 2584.88,-279.75 2478.62,-245.73 2369.77,-174.87 2303.34,-126.73"/>
 </g>
-<!-- SW&#45;J3&#45;02 -->
+<!-- SW&#45;J3&#45;01&#45;&gt;IDS&#45;J3 -->
+<g id="edge15" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;IDS&#45;J3:c</title>
+<path fill="none" stroke="#4dabf7" stroke-width="8" d="M2727.77,-499.72C2656.19,-398.03 2526.85,-214.29 2465.14,-126.62"/>
+</g>
+<!-- MPE&#45;J3 -->
 <g id="node9" class="node">
-<title>SW&#45;J3&#45;02</title>
-<polygon fill="#ffffff" stroke="none" points="0,-3.75 0,-276 513.75,-276 513.75,-3.75 0,-3.75"/>
-<polygon fill="#1e90ff" stroke="none" points="0,-149.25 0,-276 513.75,-276 513.75,-149.25 0,-149.25"/>
-<text xml:space="preserve" text-anchor="start" x="15" y="-170.8" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SW&#45;J3&#45;02 </text>
-<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="1.5,-5.25 1.5,-147.75 512.25,-147.75 512.25,-5.25 1.5,-5.25"/>
-<polygon fill="#ffffff" stroke="none" stroke-width="3" points="18,-66.75 18,-131.25 495.75,-131.25 495.75,-66.75 18,-66.75"/>
-<text xml:space="preserve" text-anchor="start" x="113.62" y="-70.45" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">mge&#45;0/0/0</text>
-<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="18,-21.75 18,-66.75 177.25,-66.75 177.25,-21.75 18,-21.75"/>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="177.25,-21.75 177.25,-66.75 336.5,-66.75 336.5,-21.75 177.25,-21.75"/>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="336.5,-21.75 336.5,-66.75 495.75,-66.75 495.75,-21.75 336.5,-21.75"/>
+<title>MPE&#45;J3</title>
+<polygon fill="#ffffff" stroke="none" points="2656.62,-26.25 2656.62,-253.5 3087.12,-253.5 3087.12,-26.25 2656.62,-26.25"/>
+<polygon fill="#57606f" stroke="none" points="2656.62,-126.75 2656.62,-253.5 3087.12,-253.5 3087.12,-126.75 2656.62,-126.75"/>
+<text xml:space="preserve" text-anchor="start" x="2671.62" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> MPE&#45;J3 </text>
+<polygon fill="#51cf66" stroke="none" points="2656.62,-26.25 2656.62,-126.75 2903.75,-126.75 2903.75,-26.25 2656.62,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="2658.12,-27.75 2658.12,-125.25 2902.25,-125.25 2902.25,-27.75 2658.12,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="2689.81" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">Admin</text>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="2903.75,-26.25 2903.75,-126.75 3087.12,-126.75 3087.12,-26.25 2903.75,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="2905.25,-27.75 2905.25,-125.25 3085.62,-125.25 3085.62,-27.75 2905.25,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="2936.94" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
 </g>
-<!-- SAKURA&#45;J3&#45;02&#45;&gt;SW&#45;J3&#45;02 -->
-<g id="edge3" class="edge">
-<title>SAKURA&#45;J3&#45;02:c&#45;&gt;SW&#45;J3&#45;02:c</title>
-<path fill="none" stroke="#1e90ff" stroke-width="8" d="M893.88,-495.99C750.47,-401.78 506.59,-241.56 365.85,-149.09"/>
+<!-- SW&#45;J3&#45;01&#45;&gt;MPE&#45;J3 -->
+<g id="edge10" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;MPE&#45;J3:c</title>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M5939.65,-564.8C5442.34,-539.61 3691.91,-441.18 3159.88,-279.75 3045.35,-245 2925.42,-174.5 2851.74,-126.63"/>
+</g>
+<!-- SW&#45;J3&#45;01&#45;&gt;MPE&#45;J3 -->
+<g id="edge11" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;MPE&#45;J3:c</title>
+<path fill="none" stroke="#4dabf7" stroke-width="8" d="M3085.39,-499.72C3063.72,-398.03 3024.58,-214.29 3005.9,-126.62"/>
+</g>
+<!-- NTP&#45;J3 -->
+<g id="node10" class="node">
+<title>NTP&#45;J3</title>
+<polygon fill="#ffffff" stroke="none" points="1571.88,-26.25 1571.88,-253.5 1985.88,-253.5 1985.88,-26.25 1571.88,-26.25"/>
+<polygon fill="#57606f" stroke="none" points="1571.88,-126.75 1571.88,-253.5 1985.88,-253.5 1985.88,-126.75 1571.88,-126.75"/>
+<text xml:space="preserve" text-anchor="start" x="1586.88" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> NTP&#45;J3 </text>
+<polygon fill="#51cf66" stroke="none" points="1571.88,-26.25 1571.88,-126.75 1985.88,-126.75 1985.88,-26.25 1571.88,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="1573.38,-27.75 1573.38,-125.25 1984.38,-125.25 1984.38,-27.75 1573.38,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="1718.88" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan0</text>
+</g>
+<!-- SW&#45;J3&#45;01&#45;&gt;NTP&#45;J3 -->
+<g id="edge13" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;NTP&#45;J3:c</title>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M3261.92,-558.6C2999.5,-533.31 2468.05,-462.34 2057.88,-279.75 1971.38,-241.25 1885.21,-173.06 1832.01,-126.6"/>
+</g>
+<!-- ZABBIX&#45;PROXY&#45;01 -->
+<g id="node11" class="node">
+<title>ZABBIX&#45;PROXY&#45;01</title>
+<polygon fill="#ffffff" stroke="none" points="3954.25,-26.25 3954.25,-253.5 4895.5,-253.5 4895.5,-26.25 3954.25,-26.25"/>
+<polygon fill="#57606f" stroke="none" points="3954.25,-126.75 3954.25,-253.5 4895.5,-253.5 4895.5,-126.75 3954.25,-126.75"/>
+<text xml:space="preserve" text-anchor="start" x="3969.25" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> ZABBIX&#45;PROXY&#45;01 </text>
+<polygon fill="#ff6b6b" stroke="none" points="3954.25,-26.25 3954.25,-126.75 4895.5,-126.75 4895.5,-26.25 3954.25,-26.25"/>
+<polygon fill="none" stroke="#57606f" stroke-width="3" points="3955.75,-27.75 3955.75,-125.25 4894,-125.25 4894,-27.75 3955.75,-27.75"/>
+<text xml:space="preserve" text-anchor="start" x="4363" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">eth1</text>
+</g>
+<!-- SW&#45;J3&#45;01&#45;&gt;ZABBIX&#45;PROXY&#45;01 -->
+<g id="edge16" class="edge">
+<title>SW&#45;J3&#45;01:c&#45;&gt;ZABBIX&#45;PROXY&#45;01:c</title>
+<path fill="none" stroke="#ff6b6b" stroke-width="8" d="M4119.81,-499.72C4193.29,-398.03 4326.04,-214.29 4389.38,-126.62"/>
 </g>
 <!-- AL&#45;J3 -->
-<g id="node10" class="node">
+<g id="node14" class="node">
 <title>AL&#45;J3</title>
 <polygon fill="#ffffff" stroke="none" points="5538.5,-26.25 5538.5,-253.5 6415.25,-253.5 6415.25,-26.25 5538.5,-26.25"/>
 <polygon fill="#57606f" stroke="none" points="5538.5,-126.75 5538.5,-253.5 6415.25,-253.5 6415.25,-126.75 5538.5,-126.75"/>
@@ -242,111 +249,104 @@
 <polygon fill="none" stroke="#57606f" stroke-width="3" points="6263.75,-27.75 6263.75,-125.25 6413.75,-125.25 6413.75,-27.75 6263.75,-27.75"/>
 <text xml:space="preserve" text-anchor="start" x="6280.25" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
 </g>
-<!-- IDS&#45;J3 -->
-<g id="node11" class="node">
-<title>IDS&#45;J3</title>
-<polygon fill="#ffffff" stroke="none" points="2129.62,-26.25 2129.62,-253.5 2512.12,-253.5 2512.12,-26.25 2129.62,-26.25"/>
-<polygon fill="#57606f" stroke="none" points="2129.62,-126.75 2129.62,-253.5 2512.12,-253.5 2512.12,-126.75 2129.62,-126.75"/>
-<text xml:space="preserve" text-anchor="start" x="2144.62" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> IDS&#45;J3 </text>
-<polygon fill="#51cf66" stroke="none" points="2129.62,-26.25 2129.62,-126.75 2349,-126.75 2349,-26.25 2129.62,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="2131.12,-27.75 2131.12,-125.25 2347.5,-125.25 2347.5,-27.75 2131.12,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="2152.69" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">admin</text>
-<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="2349,-26.25 2349,-126.75 2512.12,-126.75 2512.12,-26.25 2349,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="2350.5,-27.75 2350.5,-125.25 2510.62,-125.25 2510.62,-27.75 2350.5,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="2372.06" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
-</g>
-<!-- NTP&#45;J3 -->
-<g id="node12" class="node">
-<title>NTP&#45;J3</title>
-<polygon fill="#ffffff" stroke="none" points="1571.88,-26.25 1571.88,-253.5 1985.88,-253.5 1985.88,-26.25 1571.88,-26.25"/>
-<polygon fill="#57606f" stroke="none" points="1571.88,-126.75 1571.88,-253.5 1985.88,-253.5 1985.88,-126.75 1571.88,-126.75"/>
-<text xml:space="preserve" text-anchor="start" x="1586.88" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> NTP&#45;J3 </text>
-<polygon fill="#51cf66" stroke="none" points="1571.88,-26.25 1571.88,-126.75 1985.88,-126.75 1985.88,-26.25 1571.88,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="1573.38,-27.75 1573.38,-125.25 1984.38,-125.25 1984.38,-27.75 1573.38,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="1718.88" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan0</text>
-</g>
-<!-- SV&#45;J3 -->
-<g id="node13" class="node">
-<title>SV&#45;J3</title>
-<polygon fill="#ffffff" stroke="none" points="5039.5,-26.25 5039.5,-253.5 5394.25,-253.5 5394.25,-26.25 5039.5,-26.25"/>
-<polygon fill="#57606f" stroke="none" points="5039.5,-126.75 5039.5,-253.5 5394.25,-253.5 5394.25,-126.75 5039.5,-126.75"/>
-<text xml:space="preserve" text-anchor="start" x="5059.38" y="-148.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SV&#45;J3 </text>
-<polygon fill="#4dabf7" stroke="none" points="5039.5,-26.25 5039.5,-126.75 5192.5,-126.75 5192.5,-26.25 5039.5,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="5041,-27.75 5041,-125.25 5191,-125.25 5191,-27.75 5041,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="5057.5" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ipmi</text>
-<polygon fill="#51cf66" stroke="none" stroke-width="3" points="5192.5,-26.25 5192.5,-126.75 5394.25,-126.75 5394.25,-26.25 5192.5,-26.25"/>
-<polygon fill="none" stroke="#57606f" stroke-width="3" points="5194,-27.75 5194,-125.25 5392.75,-125.25 5392.75,-27.75 5194,-27.75"/>
-<text xml:space="preserve" text-anchor="start" x="5210.5" y="-47.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">port&#45;1</text>
-</g>
-<!-- SW&#45;J3&#45;01&#45;&gt;SAKURA&#45;J3&#45;01 -->
-<g id="edge18" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;SAKURA&#45;J3&#45;01:c</title>
-<path fill="none" stroke="#1e90ff" stroke-width="8" d="M1990.14,-513.16C1754.45,-423.08 1301.14,-249.81 1042.87,-151.1"/>
-</g>
-<!-- SW&#45;J3&#45;01&#45;&gt;MPE&#45;J3 -->
-<g id="edge10" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;MPE&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M5939.65,-564.8C5442.34,-539.61 3691.91,-441.18 3159.88,-279.75 3045.35,-245 2925.42,-174.5 2851.74,-126.63"/>
-</g>
-<!-- SW&#45;J3&#45;01&#45;&gt;MPE&#45;J3 -->
-<g id="edge11" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;MPE&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M3085.39,-499.72C3063.72,-398.03 3024.58,-214.29 3005.9,-126.62"/>
-</g>
-<!-- SW&#45;J3&#45;01&#45;&gt;ZABBIX&#45;01 -->
-<g id="edge12" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;ZABBIX&#45;01:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M3713.06,-499.72C3666.77,-398.03 3583.14,-214.29 3543.24,-126.62"/>
-</g>
-<!-- SW&#45;J3&#45;01&#45;&gt;ZABBIX&#45;PROXY&#45;01 -->
-<g id="edge16" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;ZABBIX&#45;PROXY&#45;01:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M4119.81,-499.72C4193.29,-398.03 4326.04,-214.29 4389.38,-126.62"/>
-</g>
 <!-- SW&#45;J3&#45;01&#45;&gt;AL&#45;J3 -->
 <g id="edge4" class="edge">
 <title>SW&#45;J3&#45;01:c&#45;&gt;AL&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M2616.49,-563.12C3068.15,-538.68 4385.48,-456.44 5465.88,-279.75 5763.7,-231.04 6111.41,-140.01 6262.36,-98.77"/>
+<path fill="none" stroke="#4dabf7" stroke-width="8" d="M2616.49,-563.12C3068.15,-538.68 4385.48,-456.44 5465.88,-279.75 5763.7,-231.04 6111.41,-140.01 6262.36,-98.77"/>
 </g>
 <!-- SW&#45;J3&#45;01&#45;&gt;AL&#45;J3 -->
 <g id="edge6" class="edge">
 <title>SW&#45;J3&#45;01:c&#45;&gt;AL&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M5140.46,-513.28C5365.31,-415.25 5816.67,-218.47 6027.13,-126.71"/>
+<path fill="none" stroke="#999999" stroke-width="8" d="M5140.46,-513.28C5365.31,-415.25 5816.67,-218.47 6027.13,-126.71"/>
 </g>
 <!-- SW&#45;J3&#45;01&#45;&gt;AL&#45;J3 -->
 <g id="edge7" class="edge">
 <title>SW&#45;J3&#45;01:c&#45;&gt;AL&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M5362.52,-499.72C5488.72,-398.03 5716.74,-214.29 5825.54,-126.62"/>
+<path fill="none" stroke="#999999" stroke-width="8" d="M5362.52,-499.72C5488.72,-398.03 5716.74,-214.29 5825.54,-126.62"/>
 </g>
 <!-- SW&#45;J3&#45;01&#45;&gt;AL&#45;J3 -->
 <g id="edge8" class="edge">
 <title>SW&#45;J3&#45;01:c&#45;&gt;AL&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M5555.48,-499.72C5577.5,-398.03 5617.27,-214.29 5636.24,-126.62"/>
+<path fill="none" stroke="#51cf66" stroke-width="8" d="M5555.48,-499.72C5577.5,-398.03 5617.27,-214.29 5636.24,-126.62"/>
 </g>
-<!-- SW&#45;J3&#45;01&#45;&gt;IDS&#45;J3 -->
-<g id="edge9" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;IDS&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M5673.41,-566.94C5142.75,-548.55 3175.17,-468.76 2584.88,-279.75 2478.62,-245.73 2369.77,-174.87 2303.34,-126.73"/>
+<!-- OCX光&#45;ONU -->
+<g id="node5" class="node">
+<title>OCX光&#45;ONU</title>
+<polygon fill="#ffffff" stroke="none" points="5780.38,-1646.38 5780.38,-1884.12 6413.38,-1884.12 6413.38,-1646.38 5780.38,-1646.38"/>
+<polygon fill="#00bcd4" stroke="none" points="5780.38,-1746.88 5780.38,-1884.12 6413.38,-1884.12 6413.38,-1746.88 5780.38,-1746.88"/>
+<text xml:space="preserve" text-anchor="start" x="5795.38" y="-1778.92" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> OCX光&#45;ONU </text>
+<polygon fill="#e0f7fa" stroke="none" points="5780.38,-1646.38 5780.38,-1746.88 6413.38,-1746.88 6413.38,-1646.38 5780.38,-1646.38"/>
+<polygon fill="none" stroke="#00bcd4" stroke-width="3" points="5781.88,-1647.88 5781.88,-1745.38 6411.88,-1745.38 6411.88,-1647.88 5781.88,-1647.88"/>
+<text xml:space="preserve" text-anchor="start" x="6024.5" y="-1668.08" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">port1</text>
 </g>
-<!-- SW&#45;J3&#45;01&#45;&gt;IDS&#45;J3 -->
-<g id="edge15" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;IDS&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M2727.77,-499.72C2656.19,-398.03 2526.85,-214.29 2465.14,-126.62"/>
+<!-- RT&#45;J3&#45;01 -->
+<g id="node12" class="node">
+<title>RT&#45;J3&#45;01</title>
+<polygon fill="#ffffff" stroke="none" points="5984,-991.5 5984,-1263.75 6467.75,-1263.75 6467.75,-991.5 5984,-991.5"/>
+<polygon fill="#ff4757" stroke="none" points="5984,-1137 5984,-1263.75 6467.75,-1263.75 6467.75,-1137 5984,-1137"/>
+<text xml:space="preserve" text-anchor="start" x="5999" y="-1158.55" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> RT&#45;J3&#45;01 </text>
+<polygon fill="#fff0f1" stroke="none" points="5984,-991.5 5984,-1137 6208.25,-1137 6208.25,-991.5 5984,-991.5"/>
+<polygon fill="none" stroke="#ff4757" stroke-width="3" points="5985.5,-993 5985.5,-1135.5 6206.75,-1135.5 6206.75,-993 5985.5,-993"/>
+<text xml:space="preserve" text-anchor="start" x="6009.5" y="-1035.7" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan2:9</text>
+<polygon fill="none" stroke="#ff4757" stroke-width="3" points="6209.75,-993 6209.75,-1135.5 6466.25,-1135.5 6466.25,-993 6209.75,-993"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="6226.25,-1054.5 6226.25,-1119 6449.75,-1119 6449.75,-1054.5 6226.25,-1054.5"/>
+<text xml:space="preserve" text-anchor="start" x="6233.75" y="-1058.2" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">lan3:10</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="6226.25,-1009.5 6226.25,-1054.5 6282.12,-1054.5 6282.12,-1009.5 6226.25,-1009.5"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="6282.12,-1009.5 6282.12,-1054.5 6338,-1054.5 6338,-1009.5 6282.12,-1009.5"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="6338,-1009.5 6338,-1054.5 6393.88,-1054.5 6393.88,-1009.5 6338,-1009.5"/>
+<polygon fill="#ffd43b" stroke="none" stroke-width="3" points="6393.88,-1009.5 6393.88,-1054.5 6449.75,-1054.5 6449.75,-1009.5 6393.88,-1009.5"/>
 </g>
-<!-- SW&#45;J3&#45;01&#45;&gt;NTP&#45;J3 -->
-<g id="edge13" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;NTP&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M3261.92,-558.6C2999.5,-533.31 2468.05,-462.34 2057.88,-279.75 1971.38,-241.25 1885.21,-173.06 1832.01,-126.6"/>
+<!-- OCX光&#45;ONU&#45;&gt;RT&#45;J3&#45;01 -->
+<g id="edge2" class="edge">
+<title>OCX光&#45;ONU:c&#45;&gt;RT&#45;J3&#45;01:c</title>
+<path fill="none" stroke="#999999" stroke-width="8" d="M6096.82,-1646.42C6096.68,-1535.66 6096.36,-1266.35 6096.21,-1136.96"/>
 </g>
-<!-- SW&#45;J3&#45;01&#45;&gt;SV&#45;J3 -->
-<g id="edge14" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;SV&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M4541.43,-499.63C4659.03,-442.69 4825.7,-359.61 4967.88,-279.75 5055.61,-230.47 5153.29,-168.82 5218.55,-126.62"/>
+<!-- SW&#45;J3&#45;02 -->
+<g id="node6" class="node">
+<title>SW&#45;J3&#45;02</title>
+<polygon fill="#ffffff" stroke="none" points="0,-3.75 0,-276 513.75,-276 513.75,-3.75 0,-3.75"/>
+<polygon fill="#1e90ff" stroke="none" points="0,-149.25 0,-276 513.75,-276 513.75,-149.25 0,-149.25"/>
+<text xml:space="preserve" text-anchor="start" x="15" y="-170.8" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SW&#45;J3&#45;02 </text>
+<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="1.5,-5.25 1.5,-147.75 512.25,-147.75 512.25,-5.25 1.5,-5.25"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="18,-66.75 18,-131.25 495.75,-131.25 495.75,-66.75 18,-66.75"/>
+<text xml:space="preserve" text-anchor="start" x="113.62" y="-70.45" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">mge&#45;0/0/0</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="18,-21.75 18,-66.75 177.25,-66.75 177.25,-21.75 18,-21.75"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="177.25,-21.75 177.25,-66.75 336.5,-66.75 336.5,-21.75 177.25,-21.75"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="336.5,-21.75 336.5,-66.75 495.75,-66.75 495.75,-21.75 336.5,-21.75"/>
 </g>
-<!-- SW&#45;J3&#45;01&#45;&gt;SV&#45;J3 -->
-<g id="edge17" class="edge">
-<title>SW&#45;J3&#45;01:c&#45;&gt;SV&#45;J3:c</title>
-<path fill="none" stroke="#747d8c" stroke-width="8" d="M4778.76,-499.66C4831.29,-441.54 4906.12,-356.87 4967.88,-279.75 5008.68,-228.79 5052.52,-168.11 5081.83,-126.6"/>
+<!-- RT&#45;J3&#45;01&#45;&gt;SW&#45;J3&#45;01 -->
+<g id="edge1" class="edge">
+<title>RT&#45;J3&#45;01:c&#45;&gt;SW&#45;J3&#45;01:c</title>
+<path fill="none" stroke="#ff6b6b" stroke-width="8" d="M6338.11,-991.74C6338.25,-898.9 6338.5,-737.81 6338.64,-644.9"/>
+</g>
+<!-- SAKURA&#45;J3&#45;02 -->
+<g id="node13" class="node">
+<title>SAKURA&#45;J3&#45;02</title>
+<polygon fill="#ffffff" stroke="none" points="360.75,-495.75 360.75,-775.5 1131,-775.5 1131,-495.75 360.75,-495.75"/>
+<polygon fill="#1e90ff" stroke="none" points="360.75,-648.75 360.75,-775.5 1131,-775.5 1131,-648.75 360.75,-648.75"/>
+<text xml:space="preserve" text-anchor="start" x="375.75" y="-670.3" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="96.00" fill="#ffffff"> SAKURA&#45;J3&#45;02 </text>
+<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="362.25,-497.25 362.25,-647.25 744.38,-647.25 744.38,-497.25 362.25,-497.25"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="378.75,-558.75 378.75,-630.75 727.88,-630.75 727.88,-558.75 378.75,-558.75"/>
+<text xml:space="preserve" text-anchor="start" x="394.31" y="-569.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/0&#45;仮</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="378.75,-513.75 378.75,-558.75 495.12,-558.75 495.12,-513.75 378.75,-513.75"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="495.12,-513.75 495.12,-558.75 611.5,-558.75 611.5,-513.75 495.12,-513.75"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="611.5,-513.75 611.5,-558.75 727.88,-558.75 727.88,-513.75 611.5,-513.75"/>
+<polygon fill="none" stroke="#1e90ff" stroke-width="3" points="747.38,-497.25 747.38,-647.25 1129.5,-647.25 1129.5,-497.25 747.38,-497.25"/>
+<polygon fill="#ffffff" stroke="none" stroke-width="3" points="763.88,-558.75 763.88,-630.75 1113,-630.75 1113,-558.75 763.88,-558.75"/>
+<text xml:space="preserve" text-anchor="start" x="779.44" y="-569.95" font-family="Helvetica,sans-Serif" font-size="64.00" fill="#333333">ge&#45;0/0/1&#45;仮</text>
+<polygon fill="#ff6b6b" stroke="none" stroke-width="3" points="763.88,-513.75 763.88,-558.75 880.25,-558.75 880.25,-513.75 763.88,-513.75"/>
+<polygon fill="#4dabf7" stroke="none" stroke-width="3" points="880.25,-513.75 880.25,-558.75 996.62,-558.75 996.62,-513.75 880.25,-513.75"/>
+<polygon fill="#51cf66" stroke="none" stroke-width="3" points="996.62,-513.75 996.62,-558.75 1113,-558.75 1113,-513.75 996.62,-513.75"/>
+</g>
+<!-- SAKURA&#45;J3&#45;02&#45;&gt;SW&#45;J3&#45;02 -->
+<g id="edge3" class="edge">
+<title>SAKURA&#45;J3&#45;02:c&#45;&gt;SW&#45;J3&#45;02:c</title>
+<path fill="none" stroke="#ff6b6b" stroke-width="8" d="M508.13,-495.99C451.56,-401.78 355.37,-241.56 299.86,-149.09"/>
+</g>
+<!-- SAKURA&#45;J3&#45;02&#45;&gt;SAKURA&#45;J3&#45;01 -->
+<g id="edge5" class="edge">
+<title>SAKURA&#45;J3&#45;02:c&#45;&gt;SAKURA&#45;J3&#45;01:c</title>
+<path fill="none" stroke="#ff6b6b" stroke-width="8" d="M983.71,-495.99C1039.65,-402.99 1134.28,-245.68 1190.2,-152.7"/>
 </g>
 </g>
 </svg>

@@ -72,6 +72,13 @@ type DeviceData struct {
 	PortVlans  map[string][]int // port -> VLAN IDs
 }
 
+type Connection struct {
+	SrcDev, SrcPort    string
+	DstDev, DstPort    string
+	SrcLevel, DstLevel int
+	DstTag             string
+}
+
 type ThemeColor struct {
 	Header   string
 	Border   string
@@ -146,12 +153,6 @@ func main() {
 
 	// 3. データ整理
 	devices := make(map[string]*DeviceData)
-	type Connection struct {
-		SrcDev, SrcPort    string
-		DstDev, DstPort    string
-		SrcLevel, DstLevel int
-		DstTag             string
-	}
 	var connections []Connection
 
 	for _, cable := range cResp.Results {
@@ -290,10 +291,16 @@ func main() {
 		srcComp := ":c"
 		dstComp := ":c"
 
-		dstTheme := getThemeByTag(conn.DstTag)
-		lineColor := dstTheme.Line
+		// ソースポートのVLAN情報に基づいて線の色を決定
+		lineColor := "#999999" // デフォルトはグレー
+		if srcDev, ok := devices[conn.SrcDev]; ok {
+			if vlans, ok := srcDev.PortVlans[conn.SrcPort]; ok && len(vlans) > 0 {
+				// 最初のVLANの色を使用
+				lineColor = getVlanColor(vlans[0])
+			}
+		}
 
-		// ラベルなしでシンプルに、太い線で接続
+		// VLAN色で線を描画
 		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=8.0];`,
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp,
@@ -311,6 +318,13 @@ func main() {
 		fmt.Println("You can manually generate with: dot -Tsvg topology.dot -o topology.svg")
 	} else {
 		fmt.Println("Generated topology.svg and topology.png")
+
+		// 6. インタラクティブHTMLを生成
+		if err := generateInteractiveHTML(connections); err != nil {
+			fmt.Printf("Warning: Failed to generate interactive HTML: %v\n", err)
+		} else {
+			fmt.Println("Generated index.html with interactive features")
+		}
 	}
 }
 
@@ -405,6 +419,160 @@ func getVlanColor(vlanID int) string {
 
 	// デフォルトは白
 	return "#FFFFFF"
+}
+
+// generateInteractiveHTML creates an HTML file with interactive hover effects
+func generateInteractiveHTML(connections []Connection) error {
+	// 接続情報をJSONに変換
+	type ConnJSON struct {
+		SrcDev  string `json:"src_dev"`
+		SrcPort string `json:"src_port"`
+		DstDev  string `json:"dst_dev"`
+		DstPort string `json:"dst_port"`
+	}
+	var connList []ConnJSON
+	for _, conn := range connections {
+		connList = append(connList, ConnJSON{
+			SrcDev:  conn.SrcDev,
+			SrcPort: escape(conn.SrcPort),
+			DstDev:  conn.DstDev,
+			DstPort: escape(conn.DstPort),
+		})
+	}
+	connJSON, _ := json.Marshal(connList)
+
+	// HTMLテンプレート（既存のindex.htmlと同じ構造に合わせる）
+	htmlContent := fmt.Sprintf(`<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Physical Network Topology</title>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%%;
+            height: 100%%;
+            overflow: hidden;
+        }
+
+        #svg-container {
+            width: 100%%;
+            height: 100%%;
+            border: 1px solid #ccc;
+        }
+        
+        /* インタラクティブ機能用のスタイル */
+        .edge-dimmed {
+            opacity: 0.15 !important;
+        }
+        .edge-highlight {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 4px currentColor);
+        }
+        .port-highlight {
+            filter: drop-shadow(0 0 8px #FFD700) brightness(1.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="svg-container">
+        <object id="demo-tiger" type="image/svg+xml" data="topology.svg"
+            style="width: 100%%; height: 100%%; border:1px solid black;"></object>
+    </div>
+
+    <script>
+        const connections = %s;
+        
+        // SVGが読み込まれたら Pan-Zoom 機能とインタラクティブ機能を有効化
+        window.onload = function () {
+            var svgObject = document.getElementById('demo-tiger');
+            svgObject.addEventListener('load', function () {
+                // Pan-Zoom機能を有効化
+                svgPanZoom(svgObject, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: true,
+                    fit: true,
+                    center: true
+                });
+                
+                // インタラクティブ機能を追加
+                try {
+                    const svgDoc = svgObject.contentDocument;
+                    if (!svgDoc) return;
+                    
+                    const svg = svgDoc.querySelector('svg');
+                    if (!svg) return;
+                    
+                    const edges = svg.querySelectorAll('g.edge');
+                    
+                    // 各エッジにホバーイベントを設定
+                    edges.forEach(edge => {
+                        const title = edge.querySelector('title');
+                        if (!title) return;
+                        
+                        const titleText = title.textContent.trim();
+                        const match = titleText.match(/^(.+?)->(.+?)$/);
+                        if (!match) return;
+                        
+                        const [, srcNode, dstNode] = match;
+                        
+                        // 接続情報を検索
+                        const conn = connections.find(c => 
+                            (c.src_dev === srcNode.trim() || srcNode.includes(c.src_dev)) &&
+                            (c.dst_dev === dstNode.trim() || dstNode.includes(c.dst_dev))
+                        );
+                        
+                        if (!conn) return;
+                        
+                        edge.style.cursor = 'pointer';
+                        
+                        edge.addEventListener('mouseenter', () => {
+                            // すべてのエッジを薄くする
+                            edges.forEach(e => e.classList.add('edge-dimmed'));
+                            
+                            // 現在のエッジを強調
+                            edge.classList.remove('edge-dimmed');
+                            edge.classList.add('edge-highlight');
+                            
+                            // 接続されているポートを強調
+                            const srcPortId = conn.src_dev + ':' + conn.src_port;
+                            const dstPortId = conn.dst_dev + ':' + conn.dst_port;
+                            
+                            svg.querySelectorAll('[id]').forEach(el => {
+                                const id = el.getAttribute('id');
+                                if (id === srcPortId || id === dstPortId) {
+                                    el.classList.add('port-highlight');
+                                }
+                            });
+                        });
+                        
+                        edge.addEventListener('mouseleave', () => {
+                            // すべての強調を解除
+                            edges.forEach(e => {
+                                e.classList.remove('edge-dimmed');
+                                e.classList.remove('edge-highlight');
+                            });
+                            svg.querySelectorAll('.port-highlight').forEach(el => {
+                                el.classList.remove('port-highlight');
+                            });
+                        });
+                    });
+                } catch (e) {
+                    console.error('Failed to add interactive features:', e);
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>`, string(connJSON))
+
+	// HTMLファイルを書き込み（index.htmlに上書き）
+	return os.WriteFile("index.html", []byte(htmlContent), 0644)
 }
 
 // generateImages generates SVG and PNG from the DOT file using Graphviz
