@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"os"
 	"sort"
@@ -69,7 +68,9 @@ func main() {
 		req, _ := http.NewRequest("GET", NetboxURL+"/api/dcim/devices/?limit=0", nil)
 		req.Header.Set("Authorization", "Token "+NetboxToken)
 		resp, err := client.Do(req)
-		if err != nil { panic(err) }
+		if err != nil {
+			panic(err)
+		}
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
 
@@ -84,7 +85,9 @@ func main() {
 	req, _ := http.NewRequest("GET", NetboxURL+"/api/dcim/cables/?limit=0", nil)
 	req.Header.Set("Authorization", "Token "+NetboxToken)
 	resp, err := client.Do(req)
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 
@@ -102,7 +105,9 @@ func main() {
 	var connections []Connection
 
 	for _, cable := range cResp.Results {
-		if len(cable.ATerminations) == 0 || len(cable.BTerminations) == 0 { continue }
+		if len(cable.ATerminations) == 0 || len(cable.BTerminations) == 0 {
+			continue
+		}
 		termA := cable.ATerminations[0].Object
 		termB := cable.BTerminations[0].Object
 
@@ -110,8 +115,12 @@ func main() {
 		nameB := termB.Device.Name
 		tagA := deviceTagMap[nameA]
 		tagB := deviceTagMap[nameB]
-		if tagA == "" { tagA = "other" }
-		if tagB == "" { tagB = "other" }
+		if tagA == "" {
+			tagA = "other"
+		}
+		if tagB == "" {
+			tagB = "other"
+		}
 
 		registerDevice(devices, nameA, tagA, termA.Name)
 		registerDevice(devices, nameB, tagB, termB.Name)
@@ -142,14 +151,14 @@ func main() {
 	file.WriteString("digraph NetworkTopology {\n")
 	file.WriteString("  bgcolor=\"#FFFFFF\";\n")
 	file.WriteString("  rankdir=TB;\n")
-	
+
 	// ★サイズ調整: 間隔をさらに広くして重なりを防ぐ
-	file.WriteString("  nodesep=2.0;\n") 
+	file.WriteString("  nodesep=2.0;\n")
 	file.WriteString("  ranksep=3.5;\n")
-	
+
 	file.WriteString("  splines=ortho;\n")
 	file.WriteString("  concentrate=false;\n")
-	
+
 	// ★サイズ調整: フォントサイズを大きく
 	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontsize=16];\n")
 	// ★サイズ調整: 線を太く
@@ -163,14 +172,14 @@ func main() {
 		sort.Strings(ports)
 
 		theme := getThemeByTag(dev.PrimaryTag)
-		
+
 		// ポートが多い場合は折り返す (最大列数を設定)
 		const maxCols = 12
 		portRows := splitPorts(ports, maxCols)
 
 		// HTML Label
 		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="8" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
-		
+
 		// ヘッダー: 文字サイズ大きく (POINT-SIZE="20")
 		// COLSPANは全列分確保
 		totalCols := len(portRows[0]) // 1行目の列数を基準に
@@ -180,21 +189,23 @@ func main() {
 			// 正確には「最も列数が多い行」に合わせるべき
 			maxLen := 0
 			for _, r := range portRows {
-				if len(r) > maxLen { maxLen = len(r) }
+				if len(r) > maxLen {
+					maxLen = len(r)
+				}
 			}
 			totalCols = maxLen
 		}
-		
-		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="50" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="20"> %s </FONT></B></TD></TR>`, 
+
+		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="50" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="20"> %s </FONT></B></TD></TR>`,
 			totalCols, theme.Header, theme.Text, dev.Name)
-		
+
 		// ポート行の生成
 		for _, row := range portRows {
 			label += "<TR>"
 			for _, p := range row {
 				// ★サイズ調整: ポートの幅と高さを大きく (WIDTH="100", HEIGHT="40")
 				// ★文字サイズ: POINT-SIZE="16"
-				label += fmt.Sprintf(`<TD PORT="%s" WIDTH="100" HEIGHT="40" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="16">%s</FONT></TD>`, 
+				label += fmt.Sprintf(`<TD PORT="%s" WIDTH="100" HEIGHT="40" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="16">%s</FONT></TD>`,
 					escape(p), theme.PortFill, theme.Border, p)
 			}
 			// 行の列数が足りない場合、空セルで埋める（レイアウト崩れ防止）
@@ -214,16 +225,16 @@ func main() {
 		if conn.SrcLevel == conn.DstLevel {
 			dstComp = ":s"
 		}
-		
+
 		// ★色分け: 接続先のデバイスタイプに合わせて線の色を変える
 		dstTheme := getThemeByTag(conn.DstTag)
 		lineColor := dstTheme.Line
 
-		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s"];`, 
+		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s"];`,
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp,
 			lineColor) // 色を指定
-			
+
 		file.WriteString(line + "\n")
 	}
 
@@ -249,21 +260,32 @@ func resolvePrimaryTag(tags []NetboxTag) string {
 		tagSet[t.Slug] = true
 	}
 	for _, p := range priority {
-		if tagSet[p] { return p }
+		if tagSet[p] {
+			return p
+		}
 	}
-	if len(tags) > 0 { return tags[0].Slug }
+	if len(tags) > 0 {
+		return tags[0].Slug
+	}
 	return "other"
 }
 
 func getLevelByTag(tag string) int {
 	switch tag {
-	case "onu": return 1
-	case "router": return 2
-	case "core-switch": return 3
-	case "edge-switch": return 4
-	case "server": return 5
-	case "ap": return 5
-	default: return 99
+	case "onu":
+		return 1
+	case "router":
+		return 2
+	case "core-switch":
+		return 3
+	case "edge-switch":
+		return 4
+	case "server":
+		return 5
+	case "ap":
+		return 5
+	default:
+		return 99
 	}
 }
 
@@ -271,12 +293,12 @@ func getLevelByTag(tag string) int {
 func splitPorts(ports []string, maxCols int) [][]string {
 	var rows [][]string
 	length := len(ports)
-	
+
 	// ポート数が少ないなら1行で返す
 	if length <= maxCols {
 		return [][]string{ports}
 	}
-	
+
 	// 分割計算
 	for i := 0; i < length; i += maxCols {
 		end := i + maxCols
