@@ -42,7 +42,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		id   int
 		name string
 	}{
-		{10, "VLAN 10"}, {20, "VLAN 20"}, {30, "VLAN 30"}, {40, "VLAN 40"}, {100, "VLAN 100"},
+		{10, "VLAN 10 (VISITOR)"}, {20, "VLAN 20 (MANAGEMENT)"}, {30, "VLAN 30 (SERVER)"}, {40, "VLAN 40 (RECEPTION)"}, {100, "VLAN 100 (FLETS)"},
 	}
 	for _, v := range vlanList {
 		color := style.GetVlanColor(v.id)
