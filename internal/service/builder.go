@@ -125,15 +125,12 @@ func shouldFlipLabel(tag, deviceName string) bool {
 		"SW-J3-02":     true,
 		"CS-J3-01":     true,
 		// J4 系
-		"SW-J4-01":     true,
-		"SW-J4-02":     true,
-		// J5 系
-		"SW-J5-01":     true,
-		"RT-J5-01":     true,
+		"SW-J4-01": true,
+		"SW-J4-02": true,
 		// J6 系
-		"SW-J6-01":     true,
-		"SW-J6-04":     true,
-		"SW-J6-05":     true,
+		"SW-J6-01": true,
+		"SW-J6-04": true,
+		"SW-J6-05": true,
 	}
 	return flipDevices[deviceName]
 }

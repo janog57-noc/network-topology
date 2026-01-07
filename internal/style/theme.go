@@ -31,10 +31,10 @@ func GetThemeByTag(tag string) ThemeColor {
 
 func GetVlanColor(vlanID int) string {
 	vlanColors := map[int]string{
-		10: "#FF6B6B", // 明るい赤
-		20: "#4DABF7", // 明るい青
-		30: "#51CF66", // 明るい緑
-		40: "#FFD43B", // 明るい黄色
+		10:  "#FF6B6B", // 明るい赤
+		20:  "#4DABF7", // 明るい青
+		30:  "#51CF66", // 明るい緑
+		40:  "#FFD43B", // 明るい黄色
 		100: "#6C5CE7", // インディゴ（VLAN 100）
 	}
 	if color, ok := vlanColors[vlanID]; ok {
@@ -50,9 +50,9 @@ func GetLevelLineColor(level int) string {
 	case 2:
 		return "#FF4757" // Router
 	case 3:
-		return "#e28717bc" // Core Switch
+		return "#d78c00ff" // Core Switch
 	case 4:
-		return "#1E90FF" // Edge Switch
+		return "#184cdaff" // Edge Switch
 	case 5:
 		return "#57606F" // Server/AP
 	case 6:
