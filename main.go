@@ -15,7 +15,19 @@ var (
 	NetboxToken = os.Getenv("NETBOX_TOKEN")
 )
 
-// --- データ構造 ---
+// --- APIレスポンス構造体 ---
+
+// 1. デバイス一覧取得用 (タグ情報を確実に取るため)
+type DeviceResponse struct {
+	Results []struct {
+		Name string `json:"name"`
+		Tags []struct {
+			Slug string `json:"slug"`
+		} `json:"tags"`
+	} `json:"results"`
+}
+
+// 2. ケーブル一覧取得用
 type CableResponse struct {
 	Results []struct {
 		ATerminations []Termination `json:"a_terminations"`
@@ -27,15 +39,15 @@ type Termination struct {
 		Name   string `json:"name"`
 		Device struct {
 			Name string `json:"name"`
-			Role struct { Slug string `json:"slug"` } `json:"role"`
 		} `json:"device"`
 	} `json:"object"`
 }
 
+// 内部データ構造
 type DeviceData struct {
-	Name  string
-	Role  string
-	Ports map[string]bool
+	Name      string
+	PrimaryTag string // ONU, Router, etc.
+	Ports     map[string]bool
 }
 
 // カラーパレット構造体
@@ -47,8 +59,33 @@ type ThemeColor struct {
 }
 
 func main() {
-	// 1. NetBoxデータ取得
 	client := &http.Client{}
+
+	// ---------------------------------------------------------
+	// 1. デバイス情報を全取得して、タグのマップを作成する
+	// ---------------------------------------------------------
+	deviceTagMap := make(map[string]string) // Name -> PrimaryTag
+
+	{
+		req, _ := http.NewRequest("GET", NetboxURL+"/api/dcim/devices/?limit=0", nil)
+		req.Header.Set("Authorization", "Token "+NetboxToken)
+		resp, err := client.Do(req)
+		if err != nil { panic(err) }
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+
+		var dResp DeviceResponse
+		json.Unmarshal(body, &dResp)
+
+		for _, dev := range dResp.Results {
+			// タグリストから「最も重要なタグ」を一つ選定してマップに登録
+			deviceTagMap[dev.Name] = resolvePrimaryTag(dev.Tags)
+		}
+	}
+
+	// ---------------------------------------------------------
+	// 2. ケーブル情報を取得
+	// ---------------------------------------------------------
 	req, _ := http.NewRequest("GET", NetboxURL+"/api/dcim/cables/?limit=0", nil)
 	req.Header.Set("Authorization", "Token "+NetboxToken)
 	resp, err := client.Do(req)
@@ -56,10 +93,12 @@ func main() {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 
-	var data CableResponse
-	json.Unmarshal(body, &data)
+	var cResp CableResponse
+	json.Unmarshal(body, &cResp)
 
-	// 2. データ整理
+	// ---------------------------------------------------------
+	// 3. データ整理 & DOT生成準備
+	// ---------------------------------------------------------
 	devices := make(map[string]*DeviceData)
 	type Connection struct {
 		SrcDev, SrcPort string
@@ -68,56 +107,54 @@ func main() {
 	}
 	var connections []Connection
 
-	for _, cable := range data.Results {
+	for _, cable := range cResp.Results {
 		if len(cable.ATerminations) == 0 || len(cable.BTerminations) == 0 { continue }
 		termA := cable.ATerminations[0].Object
 		termB := cable.BTerminations[0].Object
 
-		registerDevice(devices, termA.Device.Name, termA.Device.Role.Slug, termA.Name)
-		registerDevice(devices, termB.Device.Name, termB.Device.Role.Slug, termB.Name)
+		nameA := termA.Device.Name
+		nameB := termB.Device.Name
 
-		levelA := getRoleLevel(termA.Device.Role.Slug)
-		levelB := getRoleLevel(termB.Device.Role.Slug)
+		// マップからタグ情報を取得 (なければ "unknown")
+		tagA := deviceTagMap[nameA]
+		tagB := deviceTagMap[nameB]
+
+		registerDevice(devices, nameA, tagA, termA.Name)
+		registerDevice(devices, nameB, tagB, termB.Name)
+
+		levelA := getLevelByTag(tagA)
+		levelB := getLevelByTag(tagB)
 
 		// 上位レベル(数値が小さい)をSrc、下位レベルをDstにする
 		if levelA <= levelB {
 			connections = append(connections, Connection{
-				SrcDev: termA.Device.Name, SrcPort: termA.Name, SrcLevel: levelA,
-				DstDev: termB.Device.Name, DstPort: termB.Name, DstLevel: levelB,
+				SrcDev: nameA, SrcPort: termA.Name, SrcLevel: levelA,
+				DstDev: nameB, DstPort: termB.Name, DstLevel: levelB,
 			})
 		} else {
 			connections = append(connections, Connection{
-				SrcDev: termB.Device.Name, SrcPort: termB.Name, SrcLevel: levelB,
-				DstDev: termA.Device.Name, DstPort: termA.Name, DstLevel: levelA,
+				SrcDev: nameB, SrcPort: termB.Name, SrcLevel: levelB,
+				DstDev: nameA, DstPort: termA.Name, DstLevel: levelA,
 			})
 		}
 	}
 
-	// 3. DOT生成
+	// ---------------------------------------------------------
+	// 4. DOT生成
+	// ---------------------------------------------------------
 	file, _ := os.Create("topology.dot")
 	defer file.Close()
 
-	// --- Graphviz設定 (ここがズレ解消の肝) ---
 	file.WriteString("digraph NetworkTopology {\n")
-	file.WriteString("  bgcolor=\"#FFFFFF\";\n") // 背景: 白
-	file.WriteString("  rankdir=TB;\n")         // Top to Bottom
-	
-	// ★★★ ズレ解消ポイント1: 間隔を広げる ★★★
-	// 狭いとGraphvizが線を束ねてしまい、ポート位置がズレます
-	file.WriteString("  nodesep=1.5;\n")        // ノード間の横幅 (0.8 -> 1.5)
-	file.WriteString("  ranksep=2.5;\n")        // 階層間の縦幅 (1.2 -> 2.5)
-	
-	// 直角配線設定
-	file.WriteString("  splines=ortho;\n")      
-	file.WriteString("  concentrate=false;\n")  // 線をまとめない（正確にポートにつなぐため）
-	
-	// ノードフォント設定
+	file.WriteString("  bgcolor=\"#FFFFFF\";\n") 
+	file.WriteString("  rankdir=TB;\n")         
+	file.WriteString("  nodesep=1.5;\n")        // 横間隔広め
+	file.WriteString("  ranksep=2.5;\n")        // 縦間隔広め
+	file.WriteString("  splines=ortho;\n")      // 直角配線
+	file.WriteString("  concentrate=false;\n")
 	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontsize=12];\n")
-	
-	// エッジ設定
 	file.WriteString("  edge [dir=none style=solid penwidth=1.5 color=\"#888888\"];\n") 
 
-	// ノード書き込み
 	for _, dev := range devices {
 		var ports []string
 		for p := range dev.Ports {
@@ -125,22 +162,18 @@ func main() {
 		}
 		sort.Strings(ports)
 
-		// 配色の取得
-		theme := getTheme(dev.Role)
+		theme := getThemeByTag(dev.PrimaryTag)
 
 		// HTML Label
-		// BORDER="0" にしつつ、枠線色はデバイスの種類に合わせる
 		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
 		
-		// ヘッダー行 (角丸はGraphvizのHTMLラベルではできないが、色で表現)
+		// Header
 		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="35" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="14"> %s </FONT></B></TD></TR>`, 
 			len(ports), theme.Header, theme.Text, dev.Name)
 		
-		// ポート一覧行
+		// Ports
 		label += "<TR>"
 		for _, p := range ports {
-			// ★★★ ズレ解消ポイント2: ポート幅を確保 ★★★
-			// WIDTH="60" などを指定し、ターゲットを大きくする
 			label += fmt.Sprintf(`<TD PORT="%s" WIDTH="60" HEIGHT="26" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="10">%s</FONT></TD>`, 
 				escape(p), theme.PortFill, theme.Border, p)
 		}
@@ -149,11 +182,9 @@ func main() {
 		file.WriteString(fmt.Sprintf(`  "%s" [label=%s];`+"\n", dev.Name, label))
 	}
 
-	// 接続書き込み
 	for _, conn := range connections {
 		srcComp := ":s"
 		dstComp := ":n"
-
 		if conn.SrcLevel == conn.DstLevel {
 			dstComp = ":s" 
 		}
@@ -161,52 +192,86 @@ func main() {
 		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s`, 
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp)
-		
 		file.WriteString(line + ";\n")
 	}
 
 	file.WriteString("}\n")
-	fmt.Println("Generated topology.dot")
+	fmt.Println("Generated topology.dot with Tags")
 }
 
-func registerDevice(devices map[string]*DeviceData, name, role, port string) {
+// ---------------------------------------------------------
+// Helper Functions
+// ---------------------------------------------------------
+
+func registerDevice(devices map[string]*DeviceData, name, tag, port string) {
 	if _, ok := devices[name]; !ok {
-		devices[name] = &DeviceData{Name: name, Role: role, Ports: make(map[string]bool)}
+		devices[name] = &DeviceData{Name: name, PrimaryTag: tag, Ports: make(map[string]bool)}
 	}
 	devices[name].Ports[port] = true
 }
 
-func getRoleLevel(role string) int {
-	if strings.Contains(role, "core") || strings.Contains(role, "router") { return 1 }
-	if strings.Contains(role, "distribution") { return 2 }
-	if strings.Contains(role, "access") || strings.Contains(role, "switch") { return 3 }
-	if strings.Contains(role, "ap") || strings.Contains(role, "server") { return 4 }
-	return 99
+// タグリストから優先順位の高いものを抽出
+func resolvePrimaryTag(tags []struct{ Slug string }) string {
+	// 優先順位リスト (上位からマッチさせる)
+	priority := []string{"onu", "router", "core-switch", "edge-switch", "server", "ap"}
+	
+	// APIから返ってきたタグのスラグセットを作成
+	tagSet := make(map[string]bool)
+	for _, t := range tags {
+		tagSet[t.Slug] = true
+	}
+
+	for _, p := range priority {
+		if tagSet[p] {
+			return p
+		}
+	}
+	return "other"
 }
 
-// モダンで鮮やかなカラーパレット
-func getTheme(role string) ThemeColor {
-	switch {
-	case strings.Contains(role, "router") || strings.Contains(role, "firewall") || strings.Contains(role, "onu"):
-		// Vivid Pink/Red
-		return ThemeColor{Header: "#FF4757", Border: "#FF4757", Text: "#FFFFFF", PortFill: "#FFF0F1"}
-	case strings.Contains(role, "core"):
-		// Vibrant Orange
-		return ThemeColor{Header: "#FFA502", Border: "#FFA502", Text: "#FFFFFF", PortFill: "#FFF6E5"}
-	case strings.Contains(role, "distribution"):
-		// Teal / Turquoise
-		return ThemeColor{Header: "#2ED573", Border: "#2ED573", Text: "#FFFFFF", PortFill: "#EAFAF1"}
-	case strings.Contains(role, "access"):
-		// Modern Blue
-		return ThemeColor{Header: "#1E90FF", Border: "#1E90FF", Text: "#FFFFFF", PortFill: "#F0F8FF"}
-	case strings.Contains(role, "ap"):
-		// Vivid Purple
-		return ThemeColor{Header: "#5352ED", Border: "#5352ED", Text: "#FFFFFF", PortFill: "#F3F3FF"}
-	case strings.Contains(role, "server"):
-		// Slate Gray
-		return ThemeColor{Header: "#57606F", Border: "#57606F", Text: "#FFFFFF", PortFill: "#F1F2F6"}
+// タグに基づく階層レベル定義 (小さいほど上)
+func getLevelByTag(tag string) int {
+	switch tag {
+	case "onu":
+		return 1
+	case "router":
+		return 2
+	case "core-switch":
+		return 3
+	case "edge-switch":
+		return 4
+	case "server":
+		return 5
+	case "ap":
+		return 5 // Serverと同じ最下層
 	default:
-		// Default Gray
+		return 99
+	}
+}
+
+// タグに基づくカラーパレット定義
+func getThemeByTag(tag string) ThemeColor {
+	switch tag {
+	case "onu":
+		// Cyan / Aqua (Uplink)
+		return ThemeColor{Header: "#00BCD4", Border: "#00BCD4", Text: "#FFFFFF", PortFill: "#E0F7FA"}
+	case "router":
+		// Red / Pink (Core Routing)
+		return ThemeColor{Header: "#FF4757", Border: "#FF4757", Text: "#FFFFFF", PortFill: "#FFF0F1"}
+	case "core-switch":
+		// Orange (Core/Dist Switch)
+		return ThemeColor{Header: "#FFA502", Border: "#FFA502", Text: "#FFFFFF", PortFill: "#FFF6E5"}
+	case "edge-switch":
+		// Blue (Access Switch)
+		return ThemeColor{Header: "#1E90FF", Border: "#1E90FF", Text: "#FFFFFF", PortFill: "#F0F8FF"}
+	case "server":
+		// Slate Gray (End Device)
+		return ThemeColor{Header: "#57606F", Border: "#57606F", Text: "#FFFFFF", PortFill: "#F1F2F6"}
+	case "ap":
+		// Purple (Wireless)
+		return ThemeColor{Header: "#5352ED", Border: "#5352ED", Text: "#FFFFFF", PortFill: "#F3F3FF"}
+	default:
+		// Gray
 		return ThemeColor{Header: "#747D8C", Border: "#747D8C", Text: "#FFFFFF", PortFill: "#FFFFFF"}
 	}
 }
