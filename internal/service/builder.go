@@ -31,12 +31,17 @@ func (b *Builder) Build(
 		if portVlanMap[devName] == nil {
 			portVlanMap[devName] = make(map[string][]int)
 		}
+		// VLAN収集（重複排除）
+		vlanSet := make(map[int]bool)
 		var vlans []int
 		if iface.UntaggedVlan.Vid > 0 {
-			vlans = append(vlans, iface.UntaggedVlan.Vid)
+			vlanSet[iface.UntaggedVlan.Vid] = true
 		}
 		for _, tv := range iface.TaggedVlans {
-			vlans = append(vlans, tv.Vid)
+			vlanSet[tv.Vid] = true
+		}
+		for vid := range vlanSet {
+			vlans = append(vlans, vid)
 		}
 		portVlanMap[devName][portName] = vlans
 	}
