@@ -97,7 +97,8 @@ func main() {
 		req.Header.Set("Authorization", "Token "+NetboxToken)
 		resp, err := client.Do(req)
 		if err != nil {
-			panic(err)
+			fmt.Println("Error fetching devices:", err)
+			return
 		}
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
@@ -143,7 +144,8 @@ func main() {
 	req.Header.Set("Authorization", "Token "+NetboxToken)
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println("Error fetching cables:", err)
+		return
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
@@ -271,11 +273,12 @@ func main() {
 					label += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
 					// ポート名を表示する行
 					label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
-					// 色分割の行
+					// 色分割の行（均等にパーセンテージで分割）
 					label += "<TR>"
+					widthPercent := 100.0 / float64(len(vlans))
 					for _, vlan := range vlans {
 						color := getVlanColor(vlan)
-						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d" HEIGHT="45"></TD>`, color, 100/len(vlans))
+						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%.1f%%" HEIGHT="45"></TD>`, color, widthPercent)
 					}
 					label += "</TR></TABLE></TD>"
 				}
@@ -311,11 +314,12 @@ func main() {
 					label += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
 					// ポート名を表示する行
 					label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
-					// 色分割の行
+					// 色分割の行（均等にパーセンテージで分割）
 					label += "<TR>"
+					widthPercent := 100.0 / float64(len(vlans))
 					for _, vlan := range vlans {
 						color := getVlanColor(vlan)
-						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d" HEIGHT="45"></TD>`, color, 100/len(vlans))
+						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%.1f%%" HEIGHT="45"></TD>`, color, widthPercent)
 					}
 					label += "</TR></TABLE></TD>"
 				}
@@ -332,15 +336,16 @@ func main() {
 		srcComp := ":c"
 		dstComp := ":c"
 
-		// ソースデバイスのroleに基づいて線の色を決定
+		// ソースポートのVLAN情報に基づいて線の色を決定
 		lineColor := "#999999" // デフォルトはグレー
 		if srcDev, ok := devices[conn.SrcDev]; ok {
-			srcTheme := getThemeByTag(srcDev.PrimaryTag)
-			lineColor = srcTheme.Line
+			if vlans, ok := srcDev.PortVlans[conn.SrcPort]; ok && len(vlans) > 0 {
+				lineColor = getVlanColor(vlans[0])
+			}
 		}
 
-		// role色で線を描画
-		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=16.0];`,
+		// VLAN色で線を描画
+		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=20.0];`,
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp,
 			lineColor)
@@ -549,7 +554,7 @@ func generateInteractiveHTML(connections []Connection) error {
                 center: true
             });
             
-            // 初期ズームを95%に設定
+            // 初期ズーム95%
             panZoomInstance.zoom(panZoomInstance.getZoom() * 0.95);
             
             // インタラクティブ機能を追加
