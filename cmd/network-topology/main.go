@@ -3,12 +3,16 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/janog57-noc/network-topology/internal/config"
 	"github.com/janog57-noc/network-topology/internal/netbox"
 	"github.com/janog57-noc/network-topology/internal/renderer"
 	"github.com/janog57-noc/network-topology/internal/service"
 )
+
+const outDir = "out"
 
 func main() {
 	// 1. 設定読み込み
@@ -40,20 +44,29 @@ func main() {
 	builder := service.NewBuilder()
 	topology := builder.Build(devices, interfaces, cables)
 
-	// 5. レンダリング
+	// 5. 出力ディレクトリ作成
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		log.Fatalf("Failed to create output dir: %v", err)
+	}
+
+	dotPath := filepath.Join(outDir, "topology.dot")
+	svgPath := filepath.Join(outDir, "topology.svg")
+	pngPath := filepath.Join(outDir, "topology.png")
+	htmlPath := filepath.Join(outDir, "index.html")
+
 	fmt.Println("Generating DOT file...")
-	if err := renderer.GenerateDOT(topology, "topology.dot"); err != nil {
+	if err := renderer.GenerateDOT(topology, dotPath); err != nil {
 		log.Fatalf("Failed to generate DOT: %v", err)
 	}
 
 	fmt.Println("Generating Images (SVG/PNG)...")
-	if err := renderer.GenerateImages("topology.dot", "topology.svg", "topology.png"); err != nil {
+	if err := renderer.GenerateImages(dotPath, svgPath, pngPath); err != nil {
 		log.Printf("Warning: Image generation failed: %v", err)
 		log.Println("Ensure Graphviz is installed.")
 	}
 
 	fmt.Println("Generating HTML...")
-	if err := renderer.GenerateHTML(topology, "topology.svg", "index.html"); err != nil {
+	if err := renderer.GenerateHTML(topology, svgPath, htmlPath); err != nil {
 		log.Printf("Warning: HTML generation failed: %v", err)
 	}
 

@@ -107,7 +107,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 	// Connections
 	for _, conn := range data.Connections {
 		lineColor := style.GetLevelLineColor(conn.SrcLevel)
-		
+
 		// 接続方向の決定：上位レベルから下位レベルへ接続
 		srcDir := getConnectionDirection(conn.SrcLevel, conn.DstLevel, "src")
 		dstDir := getConnectionDirection(conn.SrcLevel, conn.DstLevel, "dst")
@@ -126,15 +126,15 @@ func getConnectionDirection(srcLevel, dstLevel int, connType string) string {
 	// 上位レベルから下位レベルへの接続
 	if srcLevel < dstLevel {
 		if connType == "src" {
-			return ":s"  // 送信元は下に
+			return ":s" // 送信元は下に
 		}
-		return ":n"  // 受信先は上に
+		return ":n" // 受信先は上に
 	} else if srcLevel > dstLevel {
 		if connType == "src" {
-			return ":n"  // 送信元は上に
+			return ":n" // 送信元は上に
 		}
-		return ":s"  // 受信先は下に
+		return ":s" // 受信先は下に
 	}
 	// 同じレベルの場合
-	return ":c"  // 中央
+	return ":c" // 中央
 }

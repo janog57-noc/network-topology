@@ -2,7 +2,7 @@
 
 BINARY_NAME=network-topology
 MAIN_PATH=./cmd/network-topology
-OUTPUT_DIR=.
+OUT_DIR=./out
 
 help: ## Show this help message
 	@echo "Usage: make [target]"
@@ -15,14 +15,14 @@ deps: ## Download dependencies
 	go mod tidy
 
 build: deps ## Build the binary
-	go build -o $(OUTPUT_DIR)/$(BINARY_NAME) $(MAIN_PATH)/
+	go build -o $(BINARY_NAME) $(MAIN_PATH)/
 
 run: build ## Run the application
 	./$(BINARY_NAME)
 
 clean: ## Clean build artifacts
-	rm -f $(OUTPUT_DIR)/$(BINARY_NAME)
-	rm -f topology.dot topology.svg topology.png index.html
+	rm -f $(BINARY_NAME)
+	rm -f $(OUT_DIR)/topology.dot $(OUT_DIR)/topology.svg $(OUT_DIR)/topology.png $(OUT_DIR)/index.html
 
 lint: ## Run linter
 	golangci-lint run ./...
