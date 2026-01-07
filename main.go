@@ -243,44 +243,85 @@ func main() {
 		sort.Strings(ports)
 
 		theme := getThemeByTag(dev.PrimaryTag)
+		level := getLevelByTag(dev.PrimaryTag)
 
 		// すべて1段レイアウトに統一（ポート接続位置の精度を優先）
 		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="3" CELLSPACING="0" CELLPADDING="15" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
 
-		// ヘッダー: 文字サイズ 96
-		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
-			len(ports), theme.Header, theme.Text, dev.Name)
-
-		// 1段レイアウト
-		label += "<TR>"
-		for _, p := range ports {
-			// VLAN情報に基づいてポートの色を決定
-			vlans := dev.PortVlans[p]
-			if len(vlans) == 0 {
-				// VLANなし：デフォルト色
-				label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
-					escape(p), theme.PortFill, theme.Border, p)
-			} else if len(vlans) == 1 {
-				// 単一VLAN：そのVLANの色
-				portColor := getVlanColor(vlans[0])
-				label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
-					escape(p), portColor, theme.Border, p)
-			} else {
-				// 複数VLAN：テーブルで色分割
-				label += fmt.Sprintf(`<TD PORT="%s" BORDER="3" COLOR="%s">`, escape(p), theme.Border)
-				label += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
-				// ポート名を表示する行
-				label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
-				// 色分割の行
-				label += "<TR>"
-				for _, vlan := range vlans {
-					color := getVlanColor(vlan)
-					label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d" HEIGHT="45"></TD>`, color, 100/len(vlans))
+		// レベル4以上（edge-switchやサーバーなど）はポートを上、機器名を下に配置
+		// ただし、SAKURA-J3-02はSW-J3-01と同じ高さなので除外
+		if level >= 4 && dev.Name != "SAKURA-J3-02" {
+			// ポート行を先に
+			label += "<TR>"
+			for _, p := range ports {
+				// VLAN情報に基づいてポートの色を決定
+				vlans := dev.PortVlans[p]
+				if len(vlans) == 0 {
+					// VLANなし：デフォルト色
+					label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						escape(p), theme.PortFill, theme.Border, p)
+				} else if len(vlans) == 1 {
+					// 単一VLAN：そのVLANの色
+					portColor := getVlanColor(vlans[0])
+					label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						escape(p), portColor, theme.Border, p)
+				} else {
+					// 複数VLAN：テーブルで色分割
+					label += fmt.Sprintf(`<TD PORT="%s" BORDER="3" COLOR="%s">`, escape(p), theme.Border)
+					label += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
+					// ポート名を表示する行
+					label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
+					// 色分割の行
+					label += "<TR>"
+					for _, vlan := range vlans {
+						color := getVlanColor(vlan)
+						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d" HEIGHT="45"></TD>`, color, 100/len(vlans))
+					}
+					label += "</TR></TABLE></TD>"
 				}
-				label += "</TR></TABLE></TD>"
 			}
+			label += "</TR>"
+
+			// ヘッダー: 文字サイズ 96（下に配置）
+			label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
+				len(ports), theme.Header, theme.Text, dev.Name)
+		} else {
+			// レベル3以下（core-switchなど）は従来通り機器名が上
+			// ヘッダー: 文字サイズ 96
+			label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
+				len(ports), theme.Header, theme.Text, dev.Name)
+
+			// 1段レイアウト
+			label += "<TR>"
+			for _, p := range ports {
+				// VLAN情報に基づいてポートの色を決定
+				vlans := dev.PortVlans[p]
+				if len(vlans) == 0 {
+					// VLANなし：デフォルト色
+					label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						escape(p), theme.PortFill, theme.Border, p)
+				} else if len(vlans) == 1 {
+					// 単一VLAN：そのVLANの色
+					portColor := getVlanColor(vlans[0])
+					label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						escape(p), portColor, theme.Border, p)
+				} else {
+					// 複数VLAN：テーブルで色分割
+					label += fmt.Sprintf(`<TD PORT="%s" BORDER="3" COLOR="%s">`, escape(p), theme.Border)
+					label += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
+					// ポート名を表示する行
+					label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
+					// 色分割の行
+					label += "<TR>"
+					for _, vlan := range vlans {
+						color := getVlanColor(vlan)
+						label += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d" HEIGHT="45"></TD>`, color, 100/len(vlans))
+					}
+					label += "</TR></TABLE></TD>"
+				}
+			}
+			label += "</TR>"
 		}
-		label += "</TR>"
 		label += "</TABLE>>"
 
 		file.WriteString(fmt.Sprintf(`  "%s" [label=%s];`+"\n", dev.Name, label))
@@ -291,16 +332,14 @@ func main() {
 		srcComp := ":c"
 		dstComp := ":c"
 
-		// ソースポートのVLAN情報に基づいて線の色を決定
+		// ソースデバイスのroleに基づいて線の色を決定
 		lineColor := "#999999" // デフォルトはグレー
 		if srcDev, ok := devices[conn.SrcDev]; ok {
-			if vlans, ok := srcDev.PortVlans[conn.SrcPort]; ok && len(vlans) > 0 {
-				// 最初のVLANの色を使用
-				lineColor = getVlanColor(vlans[0])
-			}
+			srcTheme := getThemeByTag(srcDev.PrimaryTag)
+			lineColor = srcTheme.Line
 		}
 
-		// VLAN色で線を描画
+		// role色で線を描画
 		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=16.0];`,
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp,
