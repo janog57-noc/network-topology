@@ -89,7 +89,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		portRow += "</TR>"
 
 		// Header row
-		headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
+		headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80" ALIGN="CENTER" VALIGN="MIDDLE"><B><FONT COLOR="%s" POINT-SIZE="96"> %s </FONT></B></TD></TR>`,
 			len(ports), theme.Header, theme.Text, dev.Name)
 
 		// Add rows in appropriate order
