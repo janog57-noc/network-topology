@@ -210,7 +210,7 @@ func main() {
 	file.WriteString("  fontsize=60;\n") // フォントサイズを大きく
 
 	file.WriteString("  nodesep=2.0;\n")
-	file.WriteString("  ranksep=3.0;\n")
+	file.WriteString("  ranksep=6.0;\n") // 階層間の間隔を広げる
 
 	file.WriteString("  splines=spline;\n") // 曲線で見やすく
 	file.WriteString("  concentrate=false;\n")
@@ -423,6 +423,12 @@ func getVlanColor(vlanID int) string {
 
 // generateInteractiveHTML creates an HTML file with interactive hover effects
 func generateInteractiveHTML(connections []Connection) error {
+	// SVGファイルを読み込む
+	svgData, err := os.ReadFile("topology.svg")
+	if err != nil {
+		return fmt.Errorf("failed to read topology.svg: %w", err)
+	}
+
 	// 接続情報をJSONに変換
 	type ConnJSON struct {
 		SrcDev  string `json:"src_dev"`
@@ -441,7 +447,7 @@ func generateInteractiveHTML(connections []Connection) error {
 	}
 	connJSON, _ := json.Marshal(connList)
 
-	// HTMLテンプレート（既存のindex.htmlと同じ構造に合わせる）
+	// HTMLテンプレート（SVGを直接埋め込む）
 	htmlContent := fmt.Sprintf(`<!DOCTYPE html>
 <html>
 
@@ -480,8 +486,7 @@ func generateInteractiveHTML(connections []Connection) error {
 
 <body>
     <div id="svg-container">
-        <object id="demo-tiger" type="image/svg+xml" data="topology.svg"
-            style="width: 100%%; height: 100%%; border:1px solid black;"></object>
+        %s
     </div>
 
     <script>
@@ -489,87 +494,81 @@ func generateInteractiveHTML(connections []Connection) error {
         
         // SVGが読み込まれたら Pan-Zoom 機能とインタラクティブ機能を有効化
         window.onload = function () {
-            var svgObject = document.getElementById('demo-tiger');
-            svgObject.addEventListener('load', function () {
-                // Pan-Zoom機能を有効化
-                svgPanZoom(svgObject, {
-                    zoomEnabled: true,
-                    controlIconsEnabled: true,
-                    fit: true,
-                    center: true
-                });
+            const svg = document.querySelector('#svg-container svg');
+            if (!svg) return;
+            
+            // Pan-Zoom機能を有効化
+            svgPanZoom(svg, {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true
+            });
+            
+            // インタラクティブ機能を追加
+            try {
+                const edges = svg.querySelectorAll('g.edge');
                 
-                // インタラクティブ機能を追加
-                try {
-                    const svgDoc = svgObject.contentDocument;
-                    if (!svgDoc) return;
+                // 各エッジにホバーイベントを設定
+                edges.forEach(edge => {
+                    const title = edge.querySelector('title');
+                    if (!title) return;
                     
-                    const svg = svgDoc.querySelector('svg');
-                    if (!svg) return;
+                    const titleText = title.textContent.trim();
+                    const match = titleText.match(/^(.+?)->(.+?)$/);
+                    if (!match) return;
                     
-                    const edges = svg.querySelectorAll('g.edge');
+                    const [, srcNode, dstNode] = match;
                     
-                    // 各エッジにホバーイベントを設定
-                    edges.forEach(edge => {
-                        const title = edge.querySelector('title');
-                        if (!title) return;
+                    // 接続情報を検索
+                    const conn = connections.find(c => 
+                        (c.src_dev === srcNode.trim() || srcNode.includes(c.src_dev)) &&
+                        (c.dst_dev === dstNode.trim() || dstNode.includes(c.dst_dev))
+                    );
+                    
+                    if (!conn) return;
+                    
+                    edge.style.cursor = 'pointer';
+                    
+                    edge.addEventListener('mouseenter', () => {
+                        // すべてのエッジを薄くする
+                        edges.forEach(e => e.classList.add('edge-dimmed'));
                         
-                        const titleText = title.textContent.trim();
-                        const match = titleText.match(/^(.+?)->(.+?)$/);
-                        if (!match) return;
+                        // 現在のエッジを強調
+                        edge.classList.remove('edge-dimmed');
+                        edge.classList.add('edge-highlight');
                         
-                        const [, srcNode, dstNode] = match;
+                        // 接続されているポートを強調
+                        const srcPortId = conn.src_dev + ':' + conn.src_port;
+                        const dstPortId = conn.dst_dev + ':' + conn.dst_port;
                         
-                        // 接続情報を検索
-                        const conn = connections.find(c => 
-                            (c.src_dev === srcNode.trim() || srcNode.includes(c.src_dev)) &&
-                            (c.dst_dev === dstNode.trim() || dstNode.includes(c.dst_dev))
-                        );
-                        
-                        if (!conn) return;
-                        
-                        edge.style.cursor = 'pointer';
-                        
-                        edge.addEventListener('mouseenter', () => {
-                            // すべてのエッジを薄くする
-                            edges.forEach(e => e.classList.add('edge-dimmed'));
-                            
-                            // 現在のエッジを強調
-                            edge.classList.remove('edge-dimmed');
-                            edge.classList.add('edge-highlight');
-                            
-                            // 接続されているポートを強調
-                            const srcPortId = conn.src_dev + ':' + conn.src_port;
-                            const dstPortId = conn.dst_dev + ':' + conn.dst_port;
-                            
-                            svg.querySelectorAll('[id]').forEach(el => {
-                                const id = el.getAttribute('id');
-                                if (id === srcPortId || id === dstPortId) {
-                                    el.classList.add('port-highlight');
-                                }
-                            });
-                        });
-                        
-                        edge.addEventListener('mouseleave', () => {
-                            // すべての強調を解除
-                            edges.forEach(e => {
-                                e.classList.remove('edge-dimmed');
-                                e.classList.remove('edge-highlight');
-                            });
-                            svg.querySelectorAll('.port-highlight').forEach(el => {
-                                el.classList.remove('port-highlight');
-                            });
+                        svg.querySelectorAll('[id]').forEach(el => {
+                            const id = el.getAttribute('id');
+                            if (id === srcPortId || id === dstPortId) {
+                                el.classList.add('port-highlight');
+                            }
                         });
                     });
-                } catch (e) {
-                    console.error('Failed to add interactive features:', e);
-                }
-            });
+                    
+                    edge.addEventListener('mouseleave', () => {
+                        // すべての強調を解除
+                        edges.forEach(e => {
+                            e.classList.remove('edge-dimmed');
+                            e.classList.remove('edge-highlight');
+                        });
+                        svg.querySelectorAll('.port-highlight').forEach(el => {
+                            el.classList.remove('port-highlight');
+                        });
+                    });
+                });
+            } catch (e) {
+                console.error('Failed to add interactive features:', e);
+            }
         };
     </script>
 </body>
 
-</html>`, string(connJSON))
+</html>`, string(svgData), string(connJSON))
 
 	// HTMLファイルを書き込み（index.htmlに上書き）
 	return os.WriteFile("index.html", []byte(htmlContent), 0644)

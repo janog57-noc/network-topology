@@ -19,27 +19,108 @@
             height: 100%;
             border: 1px solid #ccc;
         }
+        
+        /* インタラクティブ機能用のスタイル */
+        .edge-dimmed {
+            opacity: 0.15 !important;
+        }
+        .edge-highlight {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 4px currentColor);
+        }
+        .port-highlight {
+            filter: drop-shadow(0 0 8px #FFD700) brightness(1.2);
+        }
     </style>
 </head>
 
 <body>
     <div id="svg-container">
         <object id="demo-tiger" type="image/svg+xml" data="topology.svg"
-            style="width: 100%; height: 100%; border:1px solid black; "></object>
+            style="width: 100%; height: 100%; border:1px solid black;"></object>
     </div>
 
     <script>
-        // SVGが読み込まれたら Pan-Zoom 機能を有効化
+        const connections = [{"src_dev":"RT-J3-01","src_port":"lan3_10","dst_dev":"SW-J3-01","dst_port":"xe_0_2_3"},{"src_dev":"OCX光-ONU","src_port":"port1","dst_dev":"RT-J3-01","dst_port":"lan2_9"},{"src_dev":"SAKURA-J3-02","src_port":"ge_0_0_0_仮","dst_dev":"SW-J3-02","dst_port":"mge_0_0_0"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_0","dst_dev":"AL-J3","dst_port":"ipmi"},{"src_dev":"SAKURA-J3-02","src_port":"ge_0_0_1_仮","dst_dev":"SAKURA-J3-01","dst_port":"ge_0_0_1_仮"},{"src_dev":"SW-J3-01","src_port":"xe_0_1_0","dst_dev":"AL-J3","dst_port":"internal"},{"src_dev":"SW-J3-01","src_port":"xe_0_1_1","dst_dev":"AL-J3","dst_port":"external"},{"src_dev":"SW-J3-01","src_port":"xe_0_1_2","dst_dev":"AL-J3","dst_port":"Admin"},{"src_dev":"SW-J3-01","src_port":"xe_0_1_3","dst_dev":"IDS-J3","dst_port":"admin"},{"src_dev":"SW-J3-01","src_port":"xe_0_2_0","dst_dev":"MPE-J3","dst_port":"Admin"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_2","dst_dev":"MPE-J3","dst_port":"ipmi"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_4","dst_dev":"ZABBIX-01","dst_port":"lan0"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_3","dst_dev":"NTP-J3","dst_port":"lan0"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_6","dst_dev":"SV-J3","dst_port":"port_1"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_1","dst_dev":"IDS-J3","dst_port":"ipmi"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_5","dst_dev":"ZABBIX-PROXY-01","dst_port":"eth1"},{"src_dev":"SW-J3-01","src_port":"mge_0_0_7","dst_dev":"SV-J3","dst_port":"ipmi"},{"src_dev":"SW-J3-01","src_port":"ge_0_0_23","dst_dev":"SAKURA-J3-01","dst_port":"ge_0_0_0_仮"}];
+        
+        // SVGが読み込まれたら Pan-Zoom 機能とインタラクティブ機能を有効化
         window.onload = function () {
-            var svgElement = document.getElementById('demo-tiger');
-            svgElement.addEventListener('load', function () {
-                svgPanZoom(svgElement, {
+            var svgObject = document.getElementById('demo-tiger');
+            svgObject.addEventListener('load', function () {
+                // Pan-Zoom機能を有効化
+                svgPanZoom(svgObject, {
                     zoomEnabled: true,
                     controlIconsEnabled: true,
                     fit: true,
                     center: true
                 });
-            })
+                
+                // インタラクティブ機能を追加
+                try {
+                    const svgDoc = svgObject.contentDocument;
+                    if (!svgDoc) return;
+                    
+                    const svg = svgDoc.querySelector('svg');
+                    if (!svg) return;
+                    
+                    const edges = svg.querySelectorAll('g.edge');
+                    
+                    // 各エッジにホバーイベントを設定
+                    edges.forEach(edge => {
+                        const title = edge.querySelector('title');
+                        if (!title) return;
+                        
+                        const titleText = title.textContent.trim();
+                        const match = titleText.match(/^(.+?)->(.+?)$/);
+                        if (!match) return;
+                        
+                        const [, srcNode, dstNode] = match;
+                        
+                        // 接続情報を検索
+                        const conn = connections.find(c => 
+                            (c.src_dev === srcNode.trim() || srcNode.includes(c.src_dev)) &&
+                            (c.dst_dev === dstNode.trim() || dstNode.includes(c.dst_dev))
+                        );
+                        
+                        if (!conn) return;
+                        
+                        edge.style.cursor = 'pointer';
+                        
+                        edge.addEventListener('mouseenter', () => {
+                            // すべてのエッジを薄くする
+                            edges.forEach(e => e.classList.add('edge-dimmed'));
+                            
+                            // 現在のエッジを強調
+                            edge.classList.remove('edge-dimmed');
+                            edge.classList.add('edge-highlight');
+                            
+                            // 接続されているポートを強調
+                            const srcPortId = conn.src_dev + ':' + conn.src_port;
+                            const dstPortId = conn.dst_dev + ':' + conn.dst_port;
+                            
+                            svg.querySelectorAll('[id]').forEach(el => {
+                                const id = el.getAttribute('id');
+                                if (id === srcPortId || id === dstPortId) {
+                                    el.classList.add('port-highlight');
+                                }
+                            });
+                        });
+                        
+                        edge.addEventListener('mouseleave', () => {
+                            // すべての強調を解除
+                            edges.forEach(e => {
+                                e.classList.remove('edge-dimmed');
+                                e.classList.remove('edge-highlight');
+                            });
+                            svg.querySelectorAll('.port-highlight').forEach(el => {
+                                el.classList.remove('port-highlight');
+                            });
+                        });
+                    });
+                } catch (e) {
+                    console.error('Failed to add interactive features:', e);
+                }
+            });
         };
     </script>
 </body>
