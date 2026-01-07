@@ -15,21 +15,25 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
 		return err
 	}
 
-	type ConnJSON struct {
-		SrcDev  string `json:"src_dev"`
-		SrcPort string `json:"src_port"`
-		DstDev  string `json:"dst_dev"`
-		DstPort string `json:"dst_port"`
-	}
+    type ConnJSON struct {
+        SrcDev    string `json:"src_dev"`
+        SrcPort   string `json:"src_port"`
+        SrcPortID string `json:"src_port_id"`
+        DstDev    string `json:"dst_dev"`
+        DstPort   string `json:"dst_port"`
+        DstPortID string `json:"dst_port_id"`
+    }
 	var connList []ConnJSON
-	for _, conn := range data.Connections {
-		connList = append(connList, ConnJSON{
-			SrcDev:  conn.SrcDev,
-			SrcPort: utils.Escape(conn.SrcPort),
-			DstDev:  conn.DstDev,
-			DstPort: utils.Escape(conn.DstPort),
-		})
-	}
+    for _, conn := range data.Connections {
+        connList = append(connList, ConnJSON{
+            SrcDev:    conn.SrcDev,
+            SrcPort:   conn.SrcPort,
+            SrcPortID: utils.Escape(conn.SrcPort),
+            DstDev:    conn.DstDev,
+            DstPort:   conn.DstPort,
+            DstPortID: utils.Escape(conn.DstPort),
+        })
+    }
 	connJSON, _ := json.Marshal(connList)
 
 	htmlContent := fmt.Sprintf(`<!DOCTYPE html>
@@ -90,32 +94,35 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
                         (c.dst_dev === dstNode.trim() || dstNode.includes(c.dst_dev))
                     );
                     if (!conn) return;
-                    
+					
+                    // Disable default SVG tooltip after parsing to avoid double popups
+                    title.textContent = '';
+					
                     edge.style.cursor = 'pointer';
                     const tooltipText = conn.src_dev + ':' + conn.src_port + ' → ' + conn.dst_dev + ':' + conn.dst_port;
-                    
+					
                     edge.addEventListener('mouseenter', (e) => {
                         edges.forEach(el => el.classList.add('edge-dimmed'));
                         edge.classList.remove('edge-dimmed');
                         edge.classList.add('edge-highlight');
-                        const srcPortId = conn.src_dev + ':' + conn.src_port;
-                        const dstPortId = conn.dst_dev + ':' + conn.dst_port;
+                        const srcPortId = conn.src_dev + ':' + conn.src_port_id;
+                        const dstPortId = conn.dst_dev + ':' + conn.dst_port_id;
                         svg.querySelectorAll('[id]').forEach(el => {
                             const id = el.getAttribute('id');
                             if (id === srcPortId || id === dstPortId) {
                                 el.classList.add('port-highlight');
                             }
                         });
-                        
+						
                         tooltip.textContent = tooltipText;
                         tooltip.style.display = 'block';
                     });
-                    
+					
                     edge.addEventListener('mousemove', (e) => {
                         tooltip.style.left = (e.clientX + 10) + 'px';
                         tooltip.style.top = (e.clientY + 10) + 'px';
                     });
-                    
+					
                     edge.addEventListener('mouseleave', () => {
                         edges.forEach(e => {
                             e.classList.remove('edge-dimmed');
