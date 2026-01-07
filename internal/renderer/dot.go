@@ -108,13 +108,7 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 	for _, conn := range data.Connections {
 		srcComp := ":c"
 		dstComp := ":c"
-		lineColor := "#999999"
-
-		if srcDev, ok := data.Devices[conn.SrcDev]; ok {
-			if vlans, ok := srcDev.PortVlans[conn.SrcPort]; ok && len(vlans) > 0 {
-				lineColor = style.GetVlanColor(vlans[0])
-			}
-		}
+		lineColor := style.GetLevelLineColor(conn.SrcLevel)
 
 		file.WriteString(fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=20.0];`+"\n",
 			conn.SrcDev, utils.Escape(conn.SrcPort), srcComp,

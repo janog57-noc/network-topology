@@ -39,3 +39,20 @@ func GetVlanColor(vlanID int) string {
 	}
 	return "#FFFFFF"
 }
+
+func GetLevelLineColor(level int) string {
+	switch level {
+	case 1:
+		return "#00BCD4" // ONU
+	case 2:
+		return "#FF4757" // Router
+	case 3:
+		return "#7d7d7dff" // Core Switch
+	case 4:
+		return "#1E90FF" // Edge Switch
+	case 5:
+		return "#57606F" // Server/AP
+	default:
+		return "#999999" // Other
+	}
+}
