@@ -65,3 +65,15 @@ func GetLevelLineColor(level int) string {
 		return "#999999" // Other
 	}
 }
+func GetCableTypeColor(cableType string) string {
+	cableColors := map[string]string{
+		"mmf-om3": "#00BCD4", // 水色（OM3マルチモード）
+		"mmf-om4": "#184cdaff", // 青色（OM4マルチモード）
+		"smf-os2": "#FFC300", // 黄色（OS2シングルモード）
+		"cat6a":   "#FF6B9D", // ピンク（カテゴリ6a銅線）
+	}
+	if color, ok := cableColors[cableType]; ok {
+		return color
+	}
+	return "#999999" // Unknown cable type
+}

@@ -14,6 +14,7 @@ type DeviceResponse struct {
 
 type CableResponse struct {
 	Results []struct {
+		Type          string        `json:"type"`
 		ATerminations []Termination `json:"a_terminations"`
 		BTerminations []Termination `json:"b_terminations"`
 	} `json:"results"`

@@ -69,15 +69,25 @@ func (b *Builder) Build(
 		levelB := getLevelByTag(tagB)
 
 		conn := model.Connection{
-			SrcDev: nameA, SrcPort: termA.Name, SrcLevel: levelA,
-			DstDev: nameB, DstPort: termB.Name, DstLevel: levelB,
-			DstTag: tagB,
+			SrcDev:    nameA,
+			SrcPort:   termA.Name,
+			SrcLevel:  levelA,
+			DstDev:    nameB,
+			DstPort:   termB.Name,
+			DstLevel:  levelB,
+			DstTag:    tagB,
+			CableType: cable.Type,
 		}
 		if levelA > levelB {
 			conn = model.Connection{
-				SrcDev: nameB, SrcPort: termB.Name, SrcLevel: levelB,
-				DstDev: nameA, DstPort: termA.Name, DstLevel: levelA,
-				DstTag: tagA,
+				SrcDev:    nameB,
+				SrcPort:   termB.Name,
+				SrcLevel:  levelB,
+				DstDev:    nameA,
+				DstPort:   termA.Name,
+				DstLevel:  levelA,
+				DstTag:    tagA,
+				CableType: cable.Type,
 			}
 		}
 		connections = append(connections, conn)

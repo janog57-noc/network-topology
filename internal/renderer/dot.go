@@ -48,6 +48,24 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		color := style.GetVlanColor(v.id)
 		file.WriteString(fmt.Sprintf("    <TR><TD BGCOLOR=\"%s\" WIDTH=\"120\" HEIGHT=\"60\" BORDER=\"3\"></TD><TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"64\"><B>%s</B></FONT></TD></TR>\n", color, v.name))
 	}
+	file.WriteString("    <TR><TD COLSPAN=\"2\" HEIGHT=\"20\"></TD></TR>\n")
+	file.WriteString("    <TR><TD COLSPAN=\"2\" BGCOLOR=\"#333333\" BORDER=\"0\"><B><FONT COLOR=\"#FFFFFF\" POINT-SIZE=\"80\">Cable Type Legend</FONT></B></TD></TR>\n")
+	cableList := []struct {
+		ctype string
+		name  string
+	}{
+		{"mmf-om3", "OM3 Multimode"},
+		{"mmf-om4", "OM4 Multimode"},
+		{"smf-os2", "OS2 Singlemode"},
+		{"cat6a", "Cat6a Copper"},
+	}
+	for _, c := range cableList {
+		color := style.GetCableTypeColor(c.ctype)
+		file.WriteString(fmt.Sprintf("    <TR><TD BGCOLOR=\"%s\" WIDTH=\"120\" HEIGHT=\"60\" BORDER=\"3\"></TD><TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"64\"><B>%s</B></FONT></TD></TR>\n", color, c.name))
+	}
+	file.WriteString("    <TR><TD COLSPAN=\"2\" HEIGHT=\"20\"></TD></TR>\n")
+	file.WriteString("    <TR><TD COLSPAN=\"2\" BGCOLOR=\"#333333\" BORDER=\"0\"><B><FONT COLOR=\"#FFFFFF\" POINT-SIZE=\"80\">Special Connection</FONT></B></TD></TR>\n")
+	file.WriteString("    <TR><TD BGCOLOR=\"#8E44AD\" WIDTH=\"120\" HEIGHT=\"60\" BORDER=\"3\"></TD><TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"64\"><B>Console Cable</B></FONT></TD></TR>\n")
 	file.WriteString("  </TABLE>>, shape=plaintext, rank=max];\n\n")
 
 	// Build cluster set for quick lookup
@@ -156,8 +174,10 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 
 	// Connections
 	for _, conn := range data.Connections {
-		lineColor := style.GetLevelLineColor(conn.SrcLevel)
-		// console-server タグを持つ機器が片端でもあれば紫色
+		// ケーブルタイプで色を決定
+		lineColor := style.GetCableTypeColor(conn.CableType)
+
+		// console-server タグを持つ機器が片端でもあれば紫色に上書き
 		if srcDev, ok := data.Devices[conn.SrcDev]; ok && srcDev.PrimaryTag == "console-server" {
 			lineColor = "#8E44AD"
 		}

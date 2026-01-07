@@ -13,6 +13,7 @@ type Connection struct {
 	DstDev, DstPort    string
 	SrcLevel, DstLevel int
 	DstTag             string
+	CableType          string
 }
 
 type TopologyData struct {
