@@ -22,6 +22,8 @@ func GetThemeByTag(tag string) ThemeColor {
 		return ThemeColor{Header: "#57606F", Border: "#57606F", Text: "#FFFFFF", PortFill: "#F1F2F6", Line: "#747D8C"}
 	case "ap":
 		return ThemeColor{Header: "#5352ED", Border: "#5352ED", Text: "#FFFFFF", PortFill: "#F3F3FF", Line: "#5352ED"}
+	case "console-server":
+		return ThemeColor{Header: "#8e44ad", Border: "#8e44ad", Text: "#FFFFFF", PortFill: "#F5E6FF", Line: "#8e44ad"}
 	default:
 		return ThemeColor{Header: "#747D8C", Border: "#747D8C", Text: "#FFFFFF", PortFill: "#FFFFFF", Line: "#999999"}
 	}
@@ -47,11 +49,13 @@ func GetLevelLineColor(level int) string {
 	case 2:
 		return "#FF4757" // Router
 	case 3:
-		return "#7d7d7dff" // Core Switch
+		return "#f19c34ff" // Core Switch
 	case 4:
 		return "#1E90FF" // Edge Switch
 	case 5:
 		return "#57606F" // Server/AP
+	case 6:
+		return "#8e44ad" // Console Server
 	default:
 		return "#999999" // Other
 	}

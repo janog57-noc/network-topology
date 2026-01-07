@@ -107,6 +107,13 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 	// Connections
 	for _, conn := range data.Connections {
 		lineColor := style.GetLevelLineColor(conn.SrcLevel)
+		// console-server タグを持つ機器が片端でもあれば紫色
+		if srcDev, ok := data.Devices[conn.SrcDev]; ok && srcDev.PrimaryTag == "console-server" {
+			lineColor = "#8E44AD"
+		}
+		if dstDev, ok := data.Devices[conn.DstDev]; ok && dstDev.PrimaryTag == "console-server" {
+			lineColor = "#8E44AD"
+		}
 
 		// 接続方向の決定：上位レベルから下位レベルへ接続
 		srcDir := getConnectionDirection(conn.SrcLevel, conn.DstLevel, "src")
