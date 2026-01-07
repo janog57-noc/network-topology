@@ -31,4 +31,4 @@ go.work.sum
 # .idea/
 # .vscode/
 
-network-topology
+/network-topology
