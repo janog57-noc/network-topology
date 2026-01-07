@@ -18,4 +18,5 @@ type Connection struct {
 type TopologyData struct {
 	Devices     map[string]*DeviceData
 	Connections []Connection
+	Clusters    [][]string // Each element is a list of device names in a cluster
 }

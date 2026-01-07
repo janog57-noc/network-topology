@@ -50,93 +50,108 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 	}
 	file.WriteString("  </TABLE>>, shape=plaintext, rank=max];\n\n")
 
-	// Devices
-	var ocxDevices []string
-	var routerDevices []string
-	for _, dev := range data.Devices {
-		var ports []string
-		for p := range dev.Ports {
-			ports = append(ports, p)
+	// Build cluster set for quick lookup
+	clusterMap := make(map[string]int)
+	for clusterID, cluster := range data.Clusters {
+		for _, devName := range cluster {
+			clusterMap[devName] = clusterID
 		}
-		sort.Strings(ports)
+	}
 
-		theme := style.GetThemeByTag(dev.PrimaryTag)
+	// Devices grouped by cluster
+	for clusterID, cluster := range data.Clusters {
+		file.WriteString(fmt.Sprintf("  subgraph cluster_%d {\n", clusterID))
+		file.WriteString("    style=invis;\n") // Invisible border for the cluster
 
-		// OCXデバイスを収集（ランク制約用）
-		if dev.PrimaryTag == "ocx" {
-			ocxDevices = append(ocxDevices, dev.Name)
-		}
-		// Router デバイスを収集（ランク制約用）
-		if dev.PrimaryTag == "router" {
-			routerDevices = append(routerDevices, dev.Name)
-		}
+		var clusterOcxDevices []string
+		var clusterRouterDevices []string
 
-		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="3" CELLSPACING="0" CELLPADDING="15" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
-
-		// Build port cells
-		portRow := "<TR>"
-		for _, p := range ports {
-			vlans := dev.PortVlans[p]
-			if len(vlans) == 0 {
-				portRow += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
-					utils.Escape(p), theme.PortFill, theme.Border, p)
-			} else if len(vlans) == 1 {
-				portColor := style.GetVlanColor(vlans[0])
-				portRow += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
-					utils.Escape(p), portColor, theme.Border, p)
-			} else {
-				portRow += fmt.Sprintf(`<TD PORT="%s" BORDER="3" COLOR="%s">`, utils.Escape(p), theme.Border)
-				portRow += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
-				portRow += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
-				portRow += "<TR>"
-				base := 100 / len(vlans)
-				remainder := 100 - base*(len(vlans)-1)
-				for i, vlan := range vlans {
-					color := style.GetVlanColor(vlan)
-					w := base
-					if i == len(vlans)-1 {
-						w = remainder
-					}
-					portRow += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d%%" HEIGHT="45"></TD>`, color, w)
-				}
-				portRow += "</TR></TABLE></TD>"
+		for _, devName := range cluster {
+			dev := data.Devices[devName]
+			var ports []string
+			for p := range dev.Ports {
+				ports = append(ports, p)
 			}
+			sort.Strings(ports)
+
+			theme := style.GetThemeByTag(dev.PrimaryTag)
+
+			// Collect devices for rank constraints within this cluster
+			if dev.PrimaryTag == "ocx" {
+				clusterOcxDevices = append(clusterOcxDevices, dev.Name)
+			}
+			if dev.PrimaryTag == "router" {
+				clusterRouterDevices = append(clusterRouterDevices, dev.Name)
+			}
+
+			label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="3" CELLSPACING="0" CELLPADDING="15" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
+
+			// Build port cells
+			portRow := "<TR>"
+			for _, p := range ports {
+				vlans := dev.PortVlans[p]
+				if len(vlans) == 0 {
+					portRow += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						utils.Escape(p), theme.PortFill, theme.Border, p)
+				} else if len(vlans) == 1 {
+					portColor := style.GetVlanColor(vlans[0])
+					portRow += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="3" COLOR="%s" WIDTH="100" HEIGHT="70"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD>`,
+						utils.Escape(p), portColor, theme.Border, p)
+				} else {
+					portRow += fmt.Sprintf(`<TD PORT="%s" BORDER="3" COLOR="%s">`, utils.Escape(p), theme.Border)
+					portRow += "<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" WIDTH=\"100\" HEIGHT=\"70\">"
+					portRow += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="#FFFFFF" HEIGHT="25"><FONT COLOR="#333333" POINT-SIZE="64">%s</FONT></TD></TR>`, len(vlans), p)
+					portRow += "<TR>"
+					base := 100 / len(vlans)
+					remainder := 100 - base*(len(vlans)-1)
+					for i, vlan := range vlans {
+						color := style.GetVlanColor(vlan)
+						w := base
+						if i == len(vlans)-1 {
+							w = remainder
+						}
+						portRow += fmt.Sprintf(`<TD BGCOLOR="%s" WIDTH="%d%%" HEIGHT="45"></TD>`, color, w)
+					}
+					portRow += "</TR></TABLE></TD>"
+				}
+			}
+			portRow += "</TR>"
+
+			// Header row（中央寄せの安定化のため幅指定）
+			headerWidth := len(ports) * 100
+			headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80" WIDTH="%d" ALIGN="CENTER" VALIGN="MIDDLE"><B><FONT COLOR="%s" POINT-SIZE="96">%s</FONT></B></TD></TR>`,
+				len(ports), theme.Header, headerWidth, theme.Text, dev.Name)
+
+			// Add rows in appropriate order
+			if dev.FlipLabel {
+				label += portRow + headerRow
+			} else {
+				label += headerRow + portRow
+			}
+
+			label += "</TABLE>>"
+
+			file.WriteString(fmt.Sprintf(`    "%s" [label=%s];`+"\n", dev.Name, label))
 		}
-		portRow += "</TR>"
 
-		// Header row（中央寄せの安定化のため幅指定）
-		headerWidth := len(ports) * 100
-		headerRow := fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0" HEIGHT="80" WIDTH="%d" ALIGN="CENTER" VALIGN="MIDDLE"><B><FONT COLOR="%s" POINT-SIZE="96">%s</FONT></B></TD></TR>`,
-			len(ports), theme.Header, headerWidth, theme.Text, dev.Name)
-
-		// Add rows in appropriate order
-		if dev.FlipLabel {
-			label += portRow + headerRow
-		} else {
-			label += headerRow + portRow
+		// Rank constraints within this cluster
+		if len(clusterOcxDevices) > 0 {
+			file.WriteString("    {rank=same;")
+			for _, devName := range clusterOcxDevices {
+				file.WriteString(fmt.Sprintf(` "%s";`, devName))
+			}
+			file.WriteString("}\n")
 		}
 
-		label += "</TABLE>>"
-
-		file.WriteString(fmt.Sprintf(`  "%s" [label=%s];`+"\n", dev.Name, label))
-	}
-
-	// OCXデバイスをすべて同じランクに配置（最上行）
-	if len(ocxDevices) > 0 {
-		file.WriteString("  {rank=same;")
-		for _, devName := range ocxDevices {
-			file.WriteString(fmt.Sprintf(` "%s";`, devName))
+		if len(clusterRouterDevices) > 0 {
+			file.WriteString("    {rank=same;")
+			for _, devName := range clusterRouterDevices {
+				file.WriteString(fmt.Sprintf(` "%s";`, devName))
+			}
+			file.WriteString("}\n")
 		}
-		file.WriteString("}\n")
-	}
 
-	// Routerデバイスをすべて同じランクに配置
-	if len(routerDevices) > 0 {
-		file.WriteString("  {rank=same;")
-		for _, devName := range routerDevices {
-			file.WriteString(fmt.Sprintf(` "%s";`, devName))
-		}
-		file.WriteString("}\n\n")
+		file.WriteString("  }\n\n")
 	}
 
 	// Connections

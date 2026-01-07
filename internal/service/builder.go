@@ -83,9 +83,13 @@ func (b *Builder) Build(
 		connections = append(connections, conn)
 	}
 
+	// 4. 連結成分（クラスタ）を計算
+	clusters := findConnectedComponents(devices, connections)
+
 	return &model.TopologyData{
 		Devices:     devices,
 		Connections: connections,
+		Clusters:    clusters,
 	}
 }
 
@@ -131,6 +135,8 @@ func shouldFlipLabel(tag, deviceName string) bool {
 		"SW-J6-01": true,
 		"SW-J6-04": true,
 		"SW-J6-05": true,
+		// C系
+		"SW-C-14": true,
 	}
 	return flipDevices[deviceName]
 }
@@ -173,4 +179,54 @@ func getLevelByTag(tag string) int {
 	default:
 		return 99
 	}
+}
+
+// findConnectedComponents finds connected components in the device graph
+// and returns them as clusters (each cluster is a list of device names)
+func findConnectedComponents(devices map[string]*model.DeviceData, connections []model.Connection) [][]string {
+	// Build adjacency list
+	adj := make(map[string]map[string]bool)
+	for devName := range devices {
+		adj[devName] = make(map[string]bool)
+	}
+	for _, conn := range connections {
+		adj[conn.SrcDev][conn.DstDev] = true
+		adj[conn.DstDev][conn.SrcDev] = true
+	}
+
+	// Find connected components using DFS
+	visited := make(map[string]bool)
+	var clusters [][]string
+
+	for devName := range devices {
+		if !visited[devName] {
+			cluster := dfsCluster(devName, adj, visited)
+			clusters = append(clusters, cluster)
+		}
+	}
+
+	return clusters
+}
+
+func dfsCluster(start string, adj map[string]map[string]bool, visited map[string]bool) []string {
+	var stack []string
+	var cluster []string
+
+	stack = append(stack, start)
+	visited[start] = true
+
+	for len(stack) > 0 {
+		node := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		cluster = append(cluster, node)
+
+		for neighbor := range adj[node] {
+			if !visited[neighbor] {
+				visited[neighbor] = true
+				stack = append(stack, neighbor)
+			}
+		}
+	}
+
+	return cluster
 }
