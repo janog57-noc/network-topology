@@ -24,6 +24,8 @@ func GetThemeByTag(tag string) ThemeColor {
 		return ThemeColor{Header: "#5352ED", Border: "#5352ED", Text: "#FFFFFF", PortFill: "#F3F3FF", Line: "#5352ED"}
 	case "console-server":
 		return ThemeColor{Header: "#8e44ad", Border: "#8e44ad", Text: "#FFFFFF", PortFill: "#F5E6FF", Line: "#8e44ad"}
+	case "ocx":
+		return ThemeColor{Header: "#00D9FF", Border: "#00D9FF", Text: "#000000", PortFill: "#E0FFFF", Line: "#00D9FF"}
 	default:
 		return ThemeColor{Header: "#747D8C", Border: "#747D8C", Text: "#FFFFFF", PortFill: "#FFFFFF", Line: "#999999"}
 	}
@@ -45,6 +47,8 @@ func GetVlanColor(vlanID int) string {
 
 func GetLevelLineColor(level int) string {
 	switch level {
+	case 0:
+		return "#f639a4ff" // OCX
 	case 1:
 		return "#00BCD4" // ONU
 	case 2:

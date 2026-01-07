@@ -136,7 +136,7 @@ func shouldFlipLabel(tag, deviceName string) bool {
 }
 
 func resolvePrimaryTag(tags []netbox.NetboxTag) string {
-	priority := []string{"onu", "router", "core-switch", "edge-switch", "server", "console-server", "ap"}
+	priority := []string{"ocx", "onu", "router", "core-switch", "edge-switch", "server", "console-server", "ap"}
 	tagSet := make(map[string]bool)
 	for _, t := range tags {
 		tagSet[t.Slug] = true
@@ -154,6 +154,8 @@ func resolvePrimaryTag(tags []netbox.NetboxTag) string {
 
 func getLevelByTag(tag string) int {
 	switch tag {
+	case "ocx":
+		return 0
 	case "onu":
 		return 1
 	case "router":

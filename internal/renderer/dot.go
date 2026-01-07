@@ -51,6 +51,8 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 	file.WriteString("  </TABLE>>, shape=plaintext, rank=max];\n\n")
 
 	// Devices
+	var ocxDevices []string
+	var routerDevices []string
 	for _, dev := range data.Devices {
 		var ports []string
 		for p := range dev.Ports {
@@ -59,6 +61,15 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		sort.Strings(ports)
 
 		theme := style.GetThemeByTag(dev.PrimaryTag)
+
+		// OCXデバイスを収集（ランク制約用）
+		if dev.PrimaryTag == "ocx" {
+			ocxDevices = append(ocxDevices, dev.Name)
+		}
+		// Router デバイスを収集（ランク制約用）
+		if dev.PrimaryTag == "router" {
+			routerDevices = append(routerDevices, dev.Name)
+		}
 
 		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="3" CELLSPACING="0" CELLPADDING="15" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
 
@@ -108,6 +119,24 @@ func GenerateDOT(data *model.TopologyData, filename string) error {
 		label += "</TABLE>>"
 
 		file.WriteString(fmt.Sprintf(`  "%s" [label=%s];`+"\n", dev.Name, label))
+	}
+
+	// OCXデバイスをすべて同じランクに配置（最上行）
+	if len(ocxDevices) > 0 {
+		file.WriteString("  {rank=same;")
+		for _, devName := range ocxDevices {
+			file.WriteString(fmt.Sprintf(` "%s";`, devName))
+		}
+		file.WriteString("}\n")
+	}
+
+	// Routerデバイスをすべて同じランクに配置
+	if len(routerDevices) > 0 {
+		file.WriteString("  {rank=same;")
+		for _, devName := range routerDevices {
+			file.WriteString(fmt.Sprintf(` "%s";`, devName))
+		}
+		file.WriteString("}\n\n")
 	}
 
 	// Connections
