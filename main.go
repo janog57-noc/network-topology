@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time" // 時刻表示用
 )
 
 var (
@@ -137,18 +138,26 @@ func main() {
 	file, _ := os.Create("topology.dot")
 	defer file.Close()
 
+	// タイムスタンプ生成
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+
 	file.WriteString("digraph NetworkTopology {\n")
 	file.WriteString("  bgcolor=\"#FFFFFF\";\n")
 	file.WriteString("  rankdir=TB;\n")
+	file.WriteString("  labelloc=\"t\";\n") // ラベルを上部に
+	file.WriteString(fmt.Sprintf("  label=\"Network Topology - Generated at %s\";\n", timestamp))
+	file.WriteString("  fontsize=30;\n")
 	
-	file.WriteString("  nodesep=3.0;\n") 
-	file.WriteString("  ranksep=5.0;\n")
+	// ★サイズ調整: これでもかというほど広げる
+	file.WriteString("  nodesep=4.0;\n") 
+	file.WriteString("  ranksep=8.0;\n") 
 	
 	file.WriteString("  splines=ortho;\n")
 	file.WriteString("  concentrate=false;\n")
 	
+	// フォント指定
 	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontsize=24];\n")
-	file.WriteString("  edge [dir=none style=solid penwidth=5.0];\n")
+	file.WriteString("  edge [dir=none style=solid penwidth=4.0];\n")
 
 	for _, dev := range devices {
 		var ports []string
@@ -158,35 +167,25 @@ func main() {
 		sort.Strings(ports)
 
 		theme := getThemeByTag(dev.PrimaryTag)
-		const maxCols = 12
-		portRows := splitPorts(ports, maxCols)
-
-		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="12" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
 		
-		totalCols := len(portRows[0])
-		if len(portRows) > 1 && len(portRows[0]) < maxCols {
-			maxLen := 0
-			for _, r := range portRows {
-				if len(r) > maxLen { maxLen = len(r) }
-			}
-			totalCols = maxLen
+		// ★変更点: 折り返しを廃止し、横一列にする (崩れ防止)
+		// ポートが多いスイッチは横に長くなるが、接続線は正確になる
+		
+		// CELLPADDING="20" で箱を大きくする（サイズ指定より確実）
+		label := fmt.Sprintf(`<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="20" COLOR="%s" BGCOLOR="#FFFFFF">`, theme.Border)
+		
+		// ヘッダー: 文字サイズ 40
+		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="40"> %s </FONT></B></TD></TR>`, 
+			len(ports), theme.Header, theme.Text, dev.Name)
+		
+		label += "<TR>"
+		for _, p := range ports {
+			// ポートセル: 文字サイズ 24
+			// FIXEDSIZEを使わず、パディングで自然な大きさを確保
+			label += fmt.Sprintf(`<TD PORT="%s" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="24">%s</FONT></TD>`, 
+				escape(p), theme.PortFill, theme.Border, p)
 		}
-		
-		label += fmt.Sprintf(`<TR><TD COLSPAN="%d" BGCOLOR="%s" HEIGHT="80" BORDER="0"><B><FONT COLOR="%s" POINT-SIZE="36"> %s </FONT></B></TD></TR>`, 
-			totalCols, theme.Header, theme.Text, dev.Name)
-		
-		for _, row := range portRows {
-			label += "<TR>"
-			for _, p := range row {
-				label += fmt.Sprintf(`<TD PORT="%s" WIDTH="160" HEIGHT="70" BGCOLOR="%s" BORDER="1" COLOR="%s"><FONT COLOR="#333333" POINT-SIZE="24">%s</FONT></TD>`, 
-					escape(p), theme.PortFill, theme.Border, p)
-			}
-			for i := len(row); i < totalCols; i++ {
-				label += `<TD BORDER="0"></TD>`
-			}
-			label += "</TR>"
-		}
-		label += "</TABLE>>"
+		label += "</TR></TABLE>>"
 
 		file.WriteString(fmt.Sprintf(`  "%s" [label=%s];`+"\n", dev.Name, label))
 	}
@@ -210,7 +209,7 @@ func main() {
 	}
 
 	file.WriteString("}\n")
-	fmt.Println("Generated topology.dot with Extra Large Sizes")
+	fmt.Println("Generated topology.dot with Timestamp and Layout Fixes")
 }
 
 // ---------------------------------------------------------
@@ -247,22 +246,6 @@ func getLevelByTag(tag string) int {
 	case "ap": return 5
 	default: return 99
 	}
-}
-
-func splitPorts(ports []string, maxCols int) [][]string {
-	var rows [][]string
-	length := len(ports)
-	if length <= maxCols {
-		return [][]string{ports}
-	}
-	for i := 0; i < length; i += maxCols {
-		end := i + maxCols
-		if end > length {
-			end = length
-		}
-		rows = append(rows, ports[i:end])
-	}
-	return rows
 }
 
 func getThemeByTag(tag string) ThemeColor {
