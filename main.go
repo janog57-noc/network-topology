@@ -210,14 +210,14 @@ func main() {
 	file.WriteString("  fontsize=60;\n") // フォントサイズを大きく
 
 	file.WriteString("  nodesep=2.0;\n")
-	file.WriteString("  ranksep=6.0;\n") // 階層間の間隔を広げる
+	file.WriteString("  ranksep=10.0;\n") // 階層間の間隔を広げる
 
-	file.WriteString("  splines=spline;\n") // 曲線で見やすく
+	file.WriteString("  splines=line;\n") // 曲線で見やすく
 	file.WriteString("  concentrate=false;\n")
 
 	// フォント指定: 文字を大きく
 	file.WriteString("  node [shape=plain fontname=\"Helvetica\" fontsize=64];\n")
-	file.WriteString("  edge [dir=none style=solid penwidth=12.0];\n")
+	file.WriteString("  edge [dir=none style=solid penwidth=20.0];\n")
 
 	// VLAN凡例を追加
 	file.WriteString("  VLANLegend [label=<<TABLE BORDER=\"0\" CELLBORDER=\"3\" CELLSPACING=\"0\" CELLPADDING=\"20\" BGCOLOR=\"#FFFFFF\">\n")
@@ -301,7 +301,7 @@ func main() {
 		}
 
 		// VLAN色で線を描画
-		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=8.0];`,
+		line := fmt.Sprintf(`  "%s":"%s"%s -> "%s":"%s"%s [color="%s", penwidth=16.0];`,
 			conn.SrcDev, escape(conn.SrcPort), srcComp,
 			conn.DstDev, escape(conn.DstPort), dstComp,
 			lineColor)
@@ -452,6 +452,7 @@ func generateInteractiveHTML(connections []Connection) error {
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>Physical Network Topology</title>
     <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
     <style>
@@ -497,13 +498,20 @@ func generateInteractiveHTML(connections []Connection) error {
             const svg = document.querySelector('#svg-container svg');
             if (!svg) return;
             
+            // SVGのサイズをコンテナに合わせる
+            svg.setAttribute('width', '100%%');
+            svg.setAttribute('height', '100%%');
+            
             // Pan-Zoom機能を有効化
-            svgPanZoom(svg, {
+            const panZoomInstance = svgPanZoom(svg, {
                 zoomEnabled: true,
                 controlIconsEnabled: true,
                 fit: true,
                 center: true
             });
+            
+            // 初期ズームを95%に設定
+            panZoomInstance.zoom(panZoomInstance.getZoom() * 0.95);
             
             // インタラクティブ機能を追加
             try {
