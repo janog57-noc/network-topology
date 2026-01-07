@@ -39,17 +39,33 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
     <title>Physical Network Topology</title>
     <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%%; height: 100%%; overflow: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%%; height: 100%%; overflow: hidden; font-family: Arial, sans-serif; }
         #svg-container { width: 100%%; height: 100%%; border: 1px solid #ccc; }
         .edge-dimmed { opacity: 0.15 !important; }
         .edge-highlight { opacity: 1 !important; filter: drop-shadow(0 0 4px currentColor); }
         .port-highlight { filter: drop-shadow(0 0 8px #FFD700) brightness(1.2); }
+        #tooltip { 
+            position: fixed; 
+            background: #333; 
+            color: #fff; 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
     <div id="svg-container">%s</div>
+    <div id="tooltip"></div>
     <script>
         const connections = %s;
+        const tooltip = document.getElementById('tooltip');
+        
         window.onload = function () {
             const svg = document.querySelector('#svg-container svg');
             if (!svg) return;
@@ -76,8 +92,10 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
                     if (!conn) return;
                     
                     edge.style.cursor = 'pointer';
-                    edge.addEventListener('mouseenter', () => {
-                        edges.forEach(e => e.classList.add('edge-dimmed'));
+                    const tooltipText = conn.src_dev + ':' + conn.src_port + ' → ' + conn.dst_dev + ':' + conn.dst_port;
+                    
+                    edge.addEventListener('mouseenter', (e) => {
+                        edges.forEach(el => el.classList.add('edge-dimmed'));
                         edge.classList.remove('edge-dimmed');
                         edge.classList.add('edge-highlight');
                         const srcPortId = conn.src_dev + ':' + conn.src_port;
@@ -88,13 +106,23 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
                                 el.classList.add('port-highlight');
                             }
                         });
+                        
+                        tooltip.textContent = tooltipText;
+                        tooltip.style.display = 'block';
                     });
+                    
+                    edge.addEventListener('mousemove', (e) => {
+                        tooltip.style.left = (e.clientX + 10) + 'px';
+                        tooltip.style.top = (e.clientY + 10) + 'px';
+                    });
+                    
                     edge.addEventListener('mouseleave', () => {
                         edges.forEach(e => {
                             e.classList.remove('edge-dimmed');
                             e.classList.remove('edge-highlight');
                         });
                         svg.querySelectorAll('.port-highlight').forEach(el => el.classList.remove('port-highlight'));
+                        tooltip.style.display = 'none';
                     });
                 });
             } catch (e) { console.error(e); }

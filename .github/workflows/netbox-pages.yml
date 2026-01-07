@@ -26,18 +26,26 @@ jobs:
       - name: Install Graphviz
         run: sudo apt-get update && sudo apt-get install -y graphviz
 
-      # 2. Goを実行して topology.dot を生成
+      # 2. ビルド
+      - name: Build application
+        run: go build -o network-topology ./cmd/network-topology/
+
+      # 3. Goを実行して topology.dot を生成
       - name: Generate DOT file
         env:
           NETBOX_URL: ${{ secrets.NETBOX_URL }}
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
-        run: go run main.go
+        run: ./network-topology
 
       # 3. DOT を SVG に変換
       - name: Convert DOT to SVG
         run: dot -Tsvg topology.dot -o topology.svg
 
-      # 4. GitHub Pages用にアップロード
+      # 4. 出力ファイルの確認
+      - name: Check output files
+        run: ls -la topology.*
+
+      # 5. GitHub Pages用にアップロード
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
