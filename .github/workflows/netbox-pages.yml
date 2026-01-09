@@ -67,7 +67,7 @@ jobs:
       - name: Clone Shumoku repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/shumoku
+          repository: konoe-akitoshi/shumoku
           path: shumoku
 
       - name: Install pnpm
