@@ -44,10 +44,10 @@ jobs:
       # - Graphviz不要、純JavaScript
       # - より柔軟なレイアウトとスタイリング
       # ============================================================
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: '20'
+          bun-version: latest
 
       # --------------------------------------------------------------
       # 方法A: npm公開後はこちらを使用（コメントアウト中）
@@ -57,8 +57,7 @@ jobs:
       #     NETBOX_URL: ${{ secrets.NETBOX_URL }}
       #     NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
       #   run: |
-      #     npx @shumoku/netbox --output out/topology-shumoku.svg
-      #     npx @shumoku/netbox --theme dark --output out/topology-shumoku-dark.svg
+      #     bunx @shumoku/netbox --output out/topology-shumoku.svg
 
       # --------------------------------------------------------------
       # 方法B: npm公開前はソースからビルド（現在有効）
@@ -70,36 +69,22 @@ jobs:
           repository: konoe-akitoshi/shumoku
           path: shumoku
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Install Shumoku dependencies
         working-directory: shumoku
-        run: pnpm install
+        run: bun install
 
       - name: Build Shumoku packages
         working-directory: shumoku
-        run: |
-          # Build core first
-          pnpm --filter @shumoku/core build
-          # Verify core dist
-          echo "=== Core dist/models ===" && ls -la packages/@shumoku/core/dist/models/
-          echo "=== Core dist/layout ===" && ls -la packages/@shumoku/core/dist/layout/
-          # Build netbox
-          pnpm --filter @shumoku/netbox build
-          # Verify netbox dist
-          echo "=== Netbox dist ===" && ls -la packages/@shumoku/netbox/dist/ || echo "No dist folder!"
+        run: bun run build
 
       - name: Generate topology (Shumoku - from source)
         env:
           NETBOX_URL: ${{ secrets.NETBOX_URL }}
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
         run: |
-          node shumoku/packages/@shumoku/netbox/dist/cli.js \
+          bun shumoku/packages/@shumoku/netbox/dist/cli.js \
             --output out/topology-shumoku.svg
-          node shumoku/packages/@shumoku/netbox/dist/cli.js \
+          bun shumoku/packages/@shumoku/netbox/dist/cli.js \
             --output out/topology-shumoku.yaml
 
       # ============================================================
