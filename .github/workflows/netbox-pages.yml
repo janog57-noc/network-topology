@@ -82,10 +82,10 @@ jobs:
       - name: Build Shumoku packages
         working-directory: shumoku
         run: |
-          # Build core first (dependency for other packages)
+          # Build packages in dependency order (bypass turbo for reliability)
           pnpm --filter @shumoku/core build
-          # Then build the rest
-          pnpm build
+          pnpm --filter @shumoku/parser-yaml build
+          pnpm --filter @shumoku/netbox build
 
       - name: Generate topology (Shumoku - from source)
         env:
