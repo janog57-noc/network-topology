@@ -84,10 +84,13 @@ jobs:
         run: |
           # Build core first
           pnpm --filter @shumoku/core build
-          # Verify dist exists
-          ls -la packages/@shumoku/core/dist/models/
+          # Verify core dist
+          echo "=== Core dist/models ===" && ls -la packages/@shumoku/core/dist/models/
+          echo "=== Core dist/layout ===" && ls -la packages/@shumoku/core/dist/layout/
           # Build netbox
           pnpm --filter @shumoku/netbox build
+          # Verify netbox dist
+          echo "=== Netbox dist ===" && ls -la packages/@shumoku/netbox/dist/ || echo "No dist folder!"
 
       - name: Generate topology (Shumoku - from source)
         env:
