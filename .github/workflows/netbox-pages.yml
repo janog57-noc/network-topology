@@ -19,31 +19,99 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ============================================================
+      # Go + Graphviz による既存の画像生成（従来方式）
+      # ============================================================
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
 
-      # 1. Graphvizのインストール
       - name: Install Graphviz
         run: sudo apt-get update && sudo apt-get install -y graphviz
 
-      # 2. ビルド
-      - name: Build application
+      - name: Build Go application
         run: go build -o network-topology ./cmd/network-topology/
 
-      # 3. Goを実行して成果物を生成（out/ 配下）
-      - name: Generate artifacts
+      - name: Generate topology (Go + Graphviz)
         env:
           NETBOX_URL: ${{ secrets.NETBOX_URL }}
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
         run: ./network-topology
 
-      # 4. 出力ファイルの確認
-      - name: Check output files
-        run: ls -la out
+      # ============================================================
+      # Shumoku による追加の画像生成（新方式）
+      # - Graphviz不要、純JavaScript
+      # - より柔軟なレイアウトとスタイリング
+      # ============================================================
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      # 5. GitHub Pages用にアップロード
+      # --------------------------------------------------------------
+      # 方法A: npm公開後はこちらを使用（コメントアウト中）
+      # --------------------------------------------------------------
+      # - name: Generate topology (Shumoku - from npm)
+      #   env:
+      #     NETBOX_URL: ${{ secrets.NETBOX_URL }}
+      #     NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
+      #   run: |
+      #     npx @shumoku/netbox --output out/topology-shumoku.svg
+      #     npx @shumoku/netbox --theme dark --output out/topology-shumoku-dark.svg
+
+      # --------------------------------------------------------------
+      # 方法B: npm公開前はソースからビルド（現在有効）
+      # shumokuリポジトリをクローンしてローカルビルド
+      # --------------------------------------------------------------
+      - name: Clone Shumoku repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/shumoku
+          path: shumoku
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Shumoku dependencies
+        working-directory: shumoku
+        run: pnpm install
+
+      - name: Build Shumoku packages
+        working-directory: shumoku
+        run: pnpm build
+
+      - name: Generate topology (Shumoku - from source)
+        env:
+          NETBOX_URL: ${{ secrets.NETBOX_URL }}
+          NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
+        run: |
+          # Light theme SVG
+          node shumoku/packages/@shumoku/netbox/dist/cli.js \
+            --output out/topology-shumoku.svg
+
+          # Dark theme SVG
+          node shumoku/packages/@shumoku/netbox/dist/cli.js \
+            --theme dark \
+            --output out/topology-shumoku-dark.svg
+
+          # YAML形式も出力（デバッグ/再利用用）
+          node shumoku/packages/@shumoku/netbox/dist/cli.js \
+            --output out/topology-shumoku.yaml
+
+      # ============================================================
+      # 出力確認とデプロイ
+      # ============================================================
+      - name: Check output files
+        run: |
+          echo "=== Output files ==="
+          ls -la out/
+          echo ""
+          echo "=== File sizes ==="
+          du -h out/*
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
