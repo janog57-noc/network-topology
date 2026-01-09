@@ -81,7 +81,11 @@ jobs:
 
       - name: Build Shumoku packages
         working-directory: shumoku
-        run: pnpm build
+        run: |
+          # Build core first (dependency for other packages)
+          pnpm --filter @shumoku/core build
+          # Then build the rest
+          pnpm build
 
       - name: Generate topology (Shumoku - from source)
         env:
