@@ -136,12 +136,23 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
                     container.innerHTML = svgText;
                     const svg = container.querySelector('svg');
                     if (svg) {
-                        svg.setAttribute('width', '100%%');
-                        svg.setAttribute('height', '100%%');
-                        shumokuPanZoom = svgPanZoom(svg, {
-                            zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true
+                        svg.removeAttribute('width');
+                        svg.removeAttribute('height');
+                        svg.style.width = '100%%';
+                        svg.style.height = '100%%';
+                        svg.style.maxWidth = '100%%';
+                        svg.style.maxHeight = '100%%';
+                        // Wait for DOM update before initializing pan-zoom
+                        requestAnimationFrame(() => {
+                            shumokuPanZoom = svgPanZoom(svg, {
+                                zoomEnabled: true,
+                                controlIconsEnabled: true,
+                                fit: true,
+                                center: true,
+                                minZoom: 0.1,
+                                maxZoom: 20
+                            });
                         });
-                        shumokuPanZoom.zoom(shumokuPanZoom.getZoom() * 0.95);
                     }
                     shumokuLoaded = true;
                 })
