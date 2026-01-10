@@ -104,14 +104,14 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
         <div id="svg-container">%s</div>
     </div>
     <div id="shumoku-tab" class="tab-content">
-        <div id="shumoku-container">
-            <object type="image/svg+xml" data="topology-shumoku.svg"></object>
-        </div>
+        <div id="shumoku-container"></div>
     </div>
     <div id="tooltip"></div>
     <script>
         const connections = %s;
         const tooltip = document.getElementById('tooltip');
+        let shumokuPanZoom = null;
+        let shumokuLoaded = false;
 
         // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -120,8 +120,33 @@ func GenerateHTML(data *model.TopologyData, svgFilename, outFilename string) err
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 btn.classList.add('active');
                 document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+
+                // Initialize Shumoku pan-zoom on first view
+                if (btn.dataset.tab === 'shumoku' && !shumokuLoaded) {
+                    loadShumokuSvg();
+                }
             });
         });
+
+        function loadShumokuSvg() {
+            fetch('topology-shumoku.svg')
+                .then(res => res.text())
+                .then(svgText => {
+                    const container = document.getElementById('shumoku-container');
+                    container.innerHTML = svgText;
+                    const svg = container.querySelector('svg');
+                    if (svg) {
+                        svg.setAttribute('width', '100%%');
+                        svg.setAttribute('height', '100%%');
+                        shumokuPanZoom = svgPanZoom(svg, {
+                            zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true
+                        });
+                        shumokuPanZoom.zoom(shumokuPanZoom.getZoom() * 0.95);
+                    }
+                    shumokuLoaded = true;
+                })
+                .catch(err => console.error('Failed to load Shumoku SVG:', err));
+        }
 
         window.onload = function () {
             const svg = document.querySelector('#svg-container svg');
