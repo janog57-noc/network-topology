@@ -5,7 +5,13 @@
 ## 概要
 
 - NetBox から機器・インターフェイス・ケーブル情報を取得し物理トポロジー図を生成
-- 出力は `out/` 配下に `topology.dot` / `topology.svg` / `topology.png` / `index.html` として保存
+- 2種類のレンダリングエンジンで出力:
+  - **Graphviz**: Go + dot コマンドによる従来方式
+  - **Shumoku**: TypeScript製の新方式 ([npm](https://www.npmjs.com/package/shumoku))
+- 出力は `out/` 配下に保存:
+  - `topology.dot` / `topology.svg` / `topology.png` - Graphviz出力
+  - `topology-shumoku.svg` / `topology-shumoku.yaml` - Shumoku出力
+  - `index.html` - タブで両方の出力を切り替え表示
 - Netbox Webhook をトリガーとして配線情報に変更があれば GitHub Actions で自動生成・デプロイ
 - GitHub Pages で [https://janog57-noc.github.io/network-topology/] に生成
 
