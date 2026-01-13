@@ -55,8 +55,8 @@ jobs:
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
         run: |
           bun add @shumoku/netbox
-          ./node_modules/.bin/netbox-to-shumoku --output out/topology-shumoku.svg --legend
-          ./node_modules/.bin/netbox-to-shumoku --output out/topology-shumoku.yaml
+          bunx netbox-to-shumoku --output out/topology-shumoku.svg --legend
+          bunx netbox-to-shumoku --output out/topology-shumoku.yaml
 
       # ============================================================
       # 出力確認とデプロイ
