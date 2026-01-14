@@ -1,7 +1,5 @@
-.PHONY: help build run clean deps lint test
+.PHONY: help generate clean serve
 
-BINARY_NAME=network-topology
-MAIN_PATH=./cmd/network-topology
 OUT_DIR=./out
 
 help: ## Show this help message
@@ -10,30 +8,11 @@ help: ## Show this help message
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
-deps: ## Download dependencies
-	go mod download
-	go mod tidy
-
-build: deps ## Build the binary
-	go build -o $(BINARY_NAME) $(MAIN_PATH)/
-
-run: build ## Run the application
-	./$(BINARY_NAME)
+generate: ## Generate topology HTML from NetBox
+	bunx netbox-to-shumoku --format html --output $(OUT_DIR)/index --legend
 
 clean: ## Clean build artifacts
-	rm -f $(BINARY_NAME)
-	rm -f $(OUT_DIR)/topology.dot $(OUT_DIR)/topology.svg $(OUT_DIR)/topology.png $(OUT_DIR)/index.html
+	rm -rf $(OUT_DIR)
 
-lint: ## Run linter
-	golangci-lint run ./...
-
-test: ## Run tests
-	go test -v ./...
-
-fmt: ## Format code
-	go fmt ./...
-
-vet: ## Run go vet
-	go vet ./...
-
-check: fmt vet lint ## Run all checks (fmt, vet, lint)
+serve: generate ## Generate and serve locally
+	cd $(OUT_DIR) && python3 -m http.server 8000

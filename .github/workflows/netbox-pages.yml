@@ -1,4 +1,4 @@
-name: Deploy Physical Topology
+name: Deploy Network Topology
 
 on:
   push:
@@ -19,48 +19,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ============================================================
-      # Go + Graphviz による既存の画像生成（従来方式）
-      # ============================================================
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      - name: Install Graphviz
-        run: sudo apt-get update && sudo apt-get install -y graphviz
-
-      - name: Build Go application
-        run: go build -o network-topology ./cmd/network-topology/
-
-      - name: Generate topology (Go + Graphviz)
-        env:
-          NETBOX_URL: ${{ secrets.NETBOX_URL }}
-          NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
-        run: ./network-topology
-
-      # ============================================================
-      # Shumoku による追加の画像生成（新方式）
-      # - Graphviz不要、純JavaScript
-      # - より柔軟なレイアウトとスタイリング
-      # ============================================================
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Generate topology (Shumoku)
+      - name: Generate topology (Shumoku HTML)
         env:
           NETBOX_URL: ${{ secrets.NETBOX_URL }}
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
         run: |
           bun add @shumoku/netbox
-          bunx netbox-to-shumoku --output out/topology-shumoku.svg --legend
-          bunx netbox-to-shumoku --output out/topology-shumoku.yaml
+          bunx netbox-to-shumoku --format html --output out/index --legend
 
-      # ============================================================
-      # 出力確認とデプロイ
-      # ============================================================
       - name: Check output files
         run: |
           echo "=== Output files ==="
