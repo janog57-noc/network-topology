@@ -31,6 +31,7 @@ jobs:
         run: |
           bun add @shumoku/netbox
           bunx netbox-to-shumoku --format html --output out/index --legend
+          bunx netbox-to-shumoku --format yaml --output out/topology
 
       - name: Check output files
         run: |
