@@ -1,6 +1,12 @@
 # Output directory
 /out
 
+# Generated files
+*.html
+ocx-topology.json
+netbox.json
+merged.json
+
 # Dependencies
 node_modules/
 
