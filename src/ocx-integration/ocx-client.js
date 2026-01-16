@@ -108,6 +108,7 @@ class OCXClient {
   async getVCIs() {
     try {
       const response = await this._request('/api/v1/vcis');
+      console.log(response)
       return response.items || response.vcis || [];
     } catch (error) {
       if (error.message.includes('404')) {
@@ -136,12 +137,29 @@ class OCXClient {
   }
 
   /**
+   * Get all internet connections
+   * @returns {Promise<Array>} Array of internet gateway objects
+   */
+  async getInternetConnections() {
+    try {
+      const response = await this._request('/api/v1/internets');
+      return response.items || response.internetConnections || [];
+    } catch (error) {
+      if (error.message.includes('404')) {
+        console.warn('Internet connections endpoint not found, returning empty array');
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Get all internet gateways
    * @returns {Promise<Array>} Array of internet gateway objects
    */
   async getInternetGateways() {
     try {
-      const response = await this._request('/api/v1/internets');
+      const response = await this._request('/api/v2/internets');
       return response.items || response.internetGateways || [];
     } catch (error) {
       if (error.message.includes('404')) {
@@ -152,6 +170,7 @@ class OCXClient {
     }
   }
 
+
   /**
    * Get all tunnel gateways
    * @returns {Promise<Array>} Array of tunnel gateway objects
@@ -160,6 +179,23 @@ class OCXClient {
     try {
       const response = await this._request('/api/v1/tunnelGateways');
       return response.items || response.tunnelGateways || [];
+    } catch (error) {
+      if (error.message.includes('404')) {
+        console.warn('Tunnel gateways endpoint not found, returning empty array');
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get all OCX-Router(v1)
+   * @returns {Promise<Array>} Array of OCX-Router objects
+   */
+  async getRouters() {
+    try {
+      const response = await this._request('/api/v1/routers');
+      return response.items || response.virtualRouters || [];
     } catch (error) {
       if (error.message.includes('404')) {
         console.warn('Tunnel gateways endpoint not found, returning empty array');
