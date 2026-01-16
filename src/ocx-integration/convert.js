@@ -32,20 +32,26 @@ function safeString(value) {
  */
 export async function generateShumokuGraph(client, options = {}) {
   // Fetch all required OCX resources in parallel.
-  const [physicalPorts, lags, vcs, vcis, cloudConns, internetGws, tunnelGws] = await Promise.all([
+  const [physicalPorts, lags, vcs, vcis, cloudConns, internetConnections, internetGws, tunnelGws, routers] = await Promise.all([
     client.getPhysicalPorts(),
     client.getLAGs(),
     client.getVirtualCircuits(),
     client.getVCIs(),
     client.getCloudConnections(),
+    client.getInternetConnections(),
     client.getInternetGateways(),
     client.getTunnelGateways(),
+    client.getRouters(),
   ]);
 
   /** @type {Array<any>} */
   const nodes = [];
   /** @type {Array<any>} */
   const links = [];
+  /** @type {Map<number, number>} */
+  const virtualRouterInterfaceIdToRouterId = new Map();
+  // Track created node IDs to avoid duplicates
+  const createdNodeIds = new Set();
 
   // --- Physical ports -------------------------------------------------
   // Each physical port becomes an l3‑switch node.  The node ID is the
@@ -53,6 +59,7 @@ export async function generateShumokuGraph(client, options = {}) {
   // device name and the port name.
   for (const port of physicalPorts) {
     const id = `${port.id}`;
+    createdNodeIds.add(id);
     nodes.push({
       id,
       label: [`<b>${safeString(port.name)}</b>`, safeString(port.device)],
@@ -65,6 +72,7 @@ export async function generateShumokuGraph(client, options = {}) {
   // LAG ports become l2‑switch nodes.
   for (const lag of lags) {
     const id = safeString(lag.id) || `${safeString(lag.device?.name)}-${safeString(lag.name)}`;
+    createdNodeIds.add(id);
     nodes.push({
       id,
       label: [`<b>${safeString(lag.name)}</b>`, safeString(lag.device?.name)],
@@ -73,12 +81,46 @@ export async function generateShumokuGraph(client, options = {}) {
     });
   }
 
+  // --- Routers --------------------------------------------------------
+  // Routers become router nodes.
+  for (const router of routers) {
+    const id = `router-${router.id}`;
+    createdNodeIds.add(id);
+    nodes.push({
+      id,
+      label: [`<b>${safeString(router.name)}</b>`],
+      shape: 'rounded',
+      type: 'router',
+    });
+
+    // Collect VRI IDs for link generation later.
+    if (router.virtualRouterInterfaces && Array.isArray(router.virtualRouterInterfaces)) {
+      for (const vri of router.virtualRouterInterfaces) {
+        if (vri.id) {
+          virtualRouterInterfaceIdToRouterId.set(vri.id, router.id);
+        }
+      }
+    }
+  }
+
+
+  // --- Internet Connections ---------------------------------------------
+  // (Currently not used in graph generation, but logged for debugging)
+  for (const ic of internetConnections) {
+    const id = `ic-${ic.id}`;
+    createdNodeIds.add(id);
+    nodes.push({
+      id,
+      label: [`<b>${safeString(ic.name)}</b>`],
+      shape: 'rounded',
+      type: 'internet',
+    });
+  }
+
   // --- Cloud, Internet & VPN nodes ------------------------------------
-  // Track created node IDs to avoid duplicates
-  const createdNodeIds = new Set();
 
   for (const cc of cloudConns) {
-    const id = `cloud-${safeString(cc.name)}`;
+    const id = `cloud-${cc.id}`;
     if (!createdNodeIds.has(id)) {
       createdNodeIds.add(id);
       nodes.push({
@@ -90,7 +132,7 @@ export async function generateShumokuGraph(client, options = {}) {
     }
   }
   for (const gw of internetGws) {
-    const id = `internet-${safeString(gw.name)}`;
+    const id = `igw-${gw.id}`;
     if (!createdNodeIds.has(id)) {
       createdNodeIds.add(id);
       nodes.push({
@@ -116,9 +158,24 @@ export async function generateShumokuGraph(client, options = {}) {
 
   // Also create nodes from VCs (in case API endpoints return empty)
   for (const vc of vcs) {
+    if (vc.vci) {
+      for (const vci of vc.vci) {
+        const physicalPortId = `${vci.physicalPort.id}`;
+        if (!createdNodeIds.has(physicalPortId)) {
+          createdNodeIds.add(physicalPortId);
+          nodes.push({
+            id: physicalPortId,
+            label: [`<b>${safeString(vci.physicalPort.name)}</b>`, safeString(vci.physicalPort.device)],
+            shape: 'rounded',
+            type: 'l3-switch',
+          });
+        }
+      }
+    }
+
     if (vc.cloudConnection) {
       for (const cc of vc.cloudConnection) {
-        const id = `cloud-${safeString(cc.name)}`;
+        const id = `cloud-${cc.id}`;
         if (!createdNodeIds.has(id)) {
           createdNodeIds.add(id);
           nodes.push({
@@ -131,7 +188,7 @@ export async function generateShumokuGraph(client, options = {}) {
       }
     }
     if (vc.internetGateway) {
-      const id = `internet-${safeString(vc.internetGateway.name)}`;
+      const id = `igw-${vc.internetGateway.id}`;
       if (!createdNodeIds.has(id)) {
         createdNodeIds.add(id);
         nodes.push({
@@ -164,81 +221,99 @@ export async function generateShumokuGraph(client, options = {}) {
 
   // --- Generate links from VCs to Cloud/Internet/Tunnel -----------------
   for (const vc of vcs) {
-    // Cloud Connections
-    if (vc.cloudConnection && vc.cloudConnection.length > 0) {
-      for (const cc of vc.cloudConnection) {
-        const cloudNodeId = `cloud-${safeString(cc.name)}`;
-        // Check VRI name for Primary/Secondary hint
-        const vris = vc.virtualRouterInterface || [];
-        const isPrimary = vris.some(v =>
-          safeString(v.name).toLowerCase().includes('primary') ||
-          safeString(v.name).includes('01')
-        );
-        const portId = isPrimary ? primaryPortId : secondaryPortId;
 
-        if (portId) {
-          links.push({
-            from: { node: portId },
-            to: { node: cloudNodeId },
-            label: [safeString(vc.name)],
-            type: 'dashed',
-          });
+    const vc_id = `vc-${vc.id}`;
+    const vcnode = {
+      id: vc_id,
+      label: [`<b>${safeString(vc.name)}</b>`],
+      shape: 'rounded',
+      type: 'l2-switch',
+    };
+    const vcLinks = [];
+
+    // OCX-Router(v1) virtualRouterInterface
+    if (vc.virtualRouterInterface && vc.virtualRouterInterface.length > 0) {
+      for (const vri of vc.virtualRouterInterface) {
+        if (vri.id) {
+          const routerId = virtualRouterInterfaceIdToRouterId.get(vri.id);
+          if (routerId) {
+            // Link from Router to VC
+            vcLinks.push({
+              from: { node: vc_id },
+              to: { node: `router-${routerId}`, port: `${vri.id}` },
+              label: safeString(vri.name),
+            });
+          }
         }
       }
     }
 
+    // Cloud Connections
+    if (vc.cloudConnection && vc.cloudConnection.length > 0) {
+      for (const cc of vc.cloudConnection) {
+        const cloudNodeId = `cloud-${cc.id}`;
+        // Connect to VC to Cloud Connection
+        vcLinks.push({
+          from: { node: vc_id },
+          to: { node: cloudNodeId, port: "port-1"},
+        });
+
+      }
+    }
+
+    // Internet Connection
+    if (vc.internetConnection) {
+      console.log(vc.internetConnection)
+      vcLinks.push({
+        from: { node: vc_id },
+        to: { node: `ic-${vc.internetConnection.id}`, port: "port-1"},
+      });
+    }
+
     // Internet Gateway
     if (vc.internetGateway) {
-      const igwNodeId = `internet-${safeString(vc.internetGateway.name)}`;
-      // Connect to both ports if multiple VRIs, otherwise primary
-      const vris = vc.virtualRouterInterface || [];
-      if (vris.length >= 2 && primaryPortId && secondaryPortId) {
-        links.push({
-          from: { node: primaryPortId },
-          to: { node: igwNodeId },
-          label: [safeString(vc.name)],
-          type: 'dashed',
-        });
-        links.push({
-          from: { node: secondaryPortId },
-          to: { node: igwNodeId },
-          type: 'dashed',
-        });
-      } else if (primaryPortId) {
-        links.push({
-          from: { node: primaryPortId },
-          to: { node: igwNodeId },
-          label: [safeString(vc.name)],
-          type: 'dashed',
-        });
-      }
+      const igwNodeId = `igw-${vc.internetGateway.id}`;
+      vcLinks.push({
+        from: { node: vc_id },
+        to: { node: igwNodeId, port: "port-1"},
+      });
     }
 
     // Tunnel Gateway
     if (vc.tunnelGateway) {
-      const tgwNodeId = `vpn-${safeString(vc.tunnelGateway.name)}`;
-      // Connect to both ports if multiple VRIs
-      const vris = vc.virtualRouterInterface || [];
-      if (vris.length >= 2 && primaryPortId && secondaryPortId) {
-        links.push({
-          from: { node: primaryPortId },
-          to: { node: tgwNodeId },
-          label: [safeString(vc.name)],
-          type: 'dashed',
-        });
-        links.push({
-          from: { node: secondaryPortId },
-          to: { node: tgwNodeId },
-          type: 'dashed',
-        });
-      } else if (primaryPortId) {
-        links.push({
-          from: { node: primaryPortId },
-          to: { node: tgwNodeId },
-          label: [safeString(vc.name)],
-          type: 'dashed',
+      const tgNodeId = `vpn-${safeString(vc.tunnelGateway.name)}`;
+      vcLinks.push({
+        from: { node: vc_id },
+        to: { node: tgNodeId, port: "port-1"},
+      });
+    }
+
+    // VCI (Physical Port)
+    if (vc.vci && vc.vci.length > 0) {
+      for (const vci of vc.vci) {
+        console.log(vci)
+        const physicalPortId = `${vci.physicalPort.id}`;
+        // Connect VC to Phyical Port
+        vcLinks.push({
+          from: { node: vc_id },
+          to: { node: physicalPortId, port: `VLAN${vci.vlanId}`},
+          label: safeString(vci.name),
         });
       }
+    }
+
+    // Create links
+    if (vcLinks.length == 2) {
+      // 接続が2つだけの場合、VCノードを作らずに直接リンクを作成
+      const label = vcLinks[0].label || vcLinks[1].label || [safeString(vc.name)];
+      links.push({
+        from: vcLinks[0].to,
+        to: vcLinks[1].to,
+        label,
+      });
+    }else if (vcLinks.length > 0) {
+      nodes.push(vcnode);
+      links.push(...vcLinks);
     }
   }
 

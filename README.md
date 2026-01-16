@@ -18,6 +18,15 @@
   - `NETBOX_URL`
   - `NETBOX_TOKEN`
 
+
+## セットアップ
+
+```bash
+git clone https://github.com/janog57-noc/network-topology.git
+cd network-topology
+bun install
+```
+
 ## 使い方（ローカル）
 
 ```bash
