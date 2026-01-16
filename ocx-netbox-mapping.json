@@ -1,0 +1,7 @@
+{
+  "description": "OCX node ID to NetBox node ID mapping",
+  "nodes": {
+    "1685": "PP-01",
+    "1686": "PP-02"
+  }
+}
