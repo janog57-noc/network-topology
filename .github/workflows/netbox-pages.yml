@@ -38,15 +38,16 @@ jobs:
         env:
           NETBOX_URL: ${{ secrets.NETBOX_URL }}
           NETBOX_TOKEN: ${{ secrets.NETBOX_TOKEN }}
-        run: npx netbox-to-shumoku --format json --output netbox.json
+        run: npx netbox-to-shumoku --format json --output netbox.json -g site
 
       - name: Merge topologies
         run: node src/merge-json.js netbox.json ocx-topology.json -o merged.json
 
-      - name: Generate HTML
+      - name: Generate HTML and YAML
         run: |
           mkdir -p out
           npx shumoku render merged.json --format html --output out/index.html
+          npx shumoku render merged.json --format yaml --output out/topology.yaml
 
       - name: Check output files
         run: |

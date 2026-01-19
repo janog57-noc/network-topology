@@ -2,7 +2,7 @@
   "type": "module",
   "dependencies": {
     "@shumoku/netbox": "^0.2.13",
-    "@shumoku/renderer": "^0.2.14",
+    "shumoku": "^0.2.6",
     "commander": "^14.0.2",
     "dotenv": "^17.2.3",
     "js-yaml": "^4.1.1"
