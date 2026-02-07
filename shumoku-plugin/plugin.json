@@ -1,0 +1,29 @@
+{
+  "id": "ocx",
+  "name": "Open Cloud Exchange",
+  "version": "1.0.0",
+  "capabilities": ["topology"],
+  "entry": "index.js",
+  "configSchema": {
+    "type": "object",
+    "required": ["url", "token", "tokenId"],
+    "properties": {
+      "url": {
+        "type": "string",
+        "title": "OCX API URL",
+        "description": "Base URL for the OCX API (e.g., https://api.ocx.example.com)"
+      },
+      "token": {
+        "type": "string",
+        "title": "Bearer Token",
+        "description": "API token for authentication",
+        "format": "password"
+      },
+      "tokenId": {
+        "type": "string",
+        "title": "X-Token-Id",
+        "description": "Token ID for authentication"
+      }
+    }
+  }
+}
