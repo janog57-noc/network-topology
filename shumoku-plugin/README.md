@@ -11,7 +11,7 @@ Shumoku Web UI の Plugins ページで:
 1. 「Install from URL」をクリック
 2. URL に以下を入力:
    ```
-   https://github.com/your-org/network-topology/archive/refs/heads/main.zip
+   https://github.com/janog57-noc/network-topology/archive/refs/heads/main.zip
    ```
 3. Subdirectory に `shumoku-plugin` を入力
 4. Install をクリック
