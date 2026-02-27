@@ -1,6 +1,6 @@
 # Network Topology Generator
 
-注記: 本リポジトリに含まれる情報はすべて公開情報です。
+注記: 本リポジトリはPublic Archiveです。JANOG57本番では[konoe-akitoshi/shumoku](https://github.com/konoe-akitoshi/shumoku)が使用されました。
 
 ## 概要
 
